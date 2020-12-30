@@ -25,7 +25,7 @@ class Dataset(object):
 
         arrival_np = self.train_df.loc[:,['arrival_date_year','arrival_date_month','arrival_date_day_of_month']].to_numpy()
         arrival_np[:,1] = [self.month_str2num[i] for i in arrival_np[:,1]]
-        self.arrival_df = pd.DataFrame([date(i[0],i[1],i[2]).isoformat() for i in arrival_np], column = 'arrival_date')
+        self.arrival_df = pd.DataFrame([date(i[0],i[1],i[2]).isoformat() for i in arrival_np], columns = ['arrival_date'])
 
         self.train_df['agent'] = self.train_df['agent'].apply(str)
         self.train_df['company'] = self.train_df['company'].apply(str)
@@ -43,10 +43,17 @@ class Dataset(object):
         if replace:
             self.train_df[column_name] = temp_df[column_name].map(smooth)
         else:
-            self.train_df[column_name + '_te'] = temp_df[column_name].map(smooth)
+            self.train_df[column_name + '_target_encoding'] = temp_df[column_name].map(smooth)
         return
-    def get_arrival_date():
+    def one_hot_encoding(self, column_name):
+        self.train_df[column_name] = pd.get_dummies(self.train_df[column_name], prefix = column_name)
         return
+    def get_arrival_date(self):
+        return self.arrival_df
+    def get_adr(self):
+        return self.target_df[['adr']]
+    def get_is_canceled(self):
+        return self.target_df[['is_canceled']]
 
 categorial_labels = ['hotel', 'arrival_date_year', 'arrival_date_month', 'arrival_date_week_number', 'arrival_date_day_of_month',
                    'meal', 'country', 'market_segment', 'distribution_channel', 'reserved_room_type', 'assigned_room_type',
@@ -56,8 +63,13 @@ categorial_labels = []
 
 from sklearn.linear_model import LinearRegression
 p = Dataset()
+input_df = pd.concat([p.get_arrival_date(), p.get_is_canceled(), p.get_adr()], axis=1)
+print(input_df)
+exit()
 for label in categorial_labels:
-    p.smooth_target_encoding(label, 'adr', 300, False)
+    p.one_hot_encoding(label, False)
 dfnp = pd.get_dummies(p.train_df).to_numpy()
 reg = LinearRegression().fit(dfnp, p.target_df['adr'].to_numpy())
 print(reg.score(dfnp, p.target_df['adr'].to_numpy()))
+
+
