@@ -26,7 +26,8 @@ class Dataset(object):
         arrival_np = self.train_df.loc[:,['arrival_date_year','arrival_date_month','arrival_date_day_of_month']].to_numpy()
         arrival_np[:,1] = [self.month_str2num[i] for i in arrival_np[:,1]]
         self.arrival_df = pd.DataFrame([date(i[0],i[1],i[2]).isoformat() for i in arrival_np], columns = ['arrival_date'])
-
+        self.number_of_days_df = pd.DataFrame(self.train_df['stays_in_weekend_nights'] + 
+                                              self.train_df['stays_in_week_nights'], columns = ['number_of_days'])
         self.train_df['agent'] = self.train_df['agent'].apply(str)
         self.train_df['company'] = self.train_df['company'].apply(str)
         self.train_df['arrival_date_year'] = self.train_df['arrival_date_year'].apply(str)
@@ -50,10 +51,15 @@ class Dataset(object):
         return
     def get_arrival_date(self):
         return self.arrival_df
+    def get_number_of_days(self):
+        return self.number_of_days
     def get_adr(self):
         return self.target_df[['adr']]
     def get_is_canceled(self):
         return self.target_df[['is_canceled']]
+    def get_dataset(self):
+        return pd.get_dummies(self.train_df)
+
 
 categorial_labels = ['hotel', 'arrival_date_year', 'arrival_date_month', 'arrival_date_week_number', 'arrival_date_day_of_month',
                    'meal', 'country', 'market_segment', 'distribution_channel', 'reserved_room_type', 'assigned_room_type',
@@ -62,13 +68,13 @@ categorial_labels = []
 
 
 from sklearn.linear_model import LinearRegression
+
 p = Dataset()
-input_df = pd.concat([p.get_arrival_date(), p.get_is_canceled(), p.get_adr()], axis=1)
-print(input_df)
-exit()
+reg = LinearRegression().fit(p.get_dataset().to_numpy(), p.get_adr().to_numpy())
+print(reg.score(p.get_dataset().to_numpy(), p.get_adr().to_numpy()))
 for label in categorial_labels:
-    p.one_hot_encoding(label, False)
-dfnp = pd.get_dummies(p.train_df).to_numpy()
+    p.one_hot_encoding(label)
+dfnp = p.get_dataset().to_numpy()
 reg = LinearRegression().fit(dfnp, p.target_df['adr'].to_numpy())
 print(reg.score(dfnp, p.target_df['adr'].to_numpy()))
 
