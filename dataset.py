@@ -37,7 +37,6 @@ class Dataset(object):
         global_mean = self.target_df[target].mean()
         temp_df = pd.concat([self.train_df[column_name], self.target_df[target]], axis=1)
         agg = temp_df.groupby(column_name)[target].agg(['count', 'mean'])
-        sector = temp_df.groupby(column_name)
         categorial_count = agg['count']
         categorial_mean = agg['mean']
         smooth = (categorial_count * categorial_mean + weight * global_mean) / (categorial_count + weight)
@@ -49,33 +48,37 @@ class Dataset(object):
     def one_hot_encoding(self, column_name):
         self.train_df[column_name] = pd.get_dummies(self.train_df[column_name], prefix = column_name)
         return
-    def get_arrival_date(self):
-        return self.arrival_df
-    def get_number_of_days(self):
-        return self.number_of_days
-    def get_adr(self):
-        return self.target_df[['adr']]
-    def get_is_canceled(self):
-        return self.target_df[['is_canceled']]
-    def get_dataset(self):
-        return pd.get_dummies(self.train_df)
+    def get_arrival_date(self, to_numpy = False):
+        if to_numpy:
+            return self.arrival_df.to_numpy().squeeze()
+        else:
+            return self.arrival_df
+    def get_number_of_days(self, to_numpy = False):
+        if to_numpy:
+            return self.number_of_days_df.to_numpy().squeeze()
+        else:
+            return self.number_of_days_df
+    def get_adr(self, to_numpy = False):
+        if to_numpy:
+            return self.target_df[['adr']].to_numpy().squeeze()
+        else:
+            return self.target_df[['adr']]
+    def get_is_canceled(self, to_numpy = False):
+        if to_numpy:
+            return self.target_df[['is_canceled']].to_numpy().squeeze()
+        else:
+            return self.target_df[['is_canceled']]
+    def get_column(self, column_name, to_numpy = False):
+        if to_numpy:
+            return self.train_df[[column_name]].to_numpy().squeeze()
+        else:
+            return self.train_df[[column_name]]
+    def get_dataset(self, to_numpy = False):
+        if to_numpy:
+            return pd.get_dummies(self.train_df).to_numpy()
+        else:
+            return pd.get_dummies(self.train_df)
 
 
-categorial_labels = ['hotel', 'arrival_date_year', 'arrival_date_month', 'arrival_date_week_number', 'arrival_date_day_of_month',
-                   'meal', 'country', 'market_segment', 'distribution_channel', 'reserved_room_type', 'assigned_room_type',
-                   'deposit_type', 'agent', 'company', 'customer_type']
-categorial_labels = []
-
-
-from sklearn.linear_model import LinearRegression
-
-p = Dataset()
-reg = LinearRegression().fit(p.get_dataset().to_numpy(), p.get_adr().to_numpy())
-print(reg.score(p.get_dataset().to_numpy(), p.get_adr().to_numpy()))
-for label in categorial_labels:
-    p.one_hot_encoding(label)
-dfnp = p.get_dataset().to_numpy()
-reg = LinearRegression().fit(dfnp, p.target_df['adr'].to_numpy())
-print(reg.score(dfnp, p.target_df['adr'].to_numpy()))
 
 
