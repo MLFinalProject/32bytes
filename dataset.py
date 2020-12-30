@@ -25,8 +25,9 @@ class Dataset(object):
 
         arrival_np = self.train_df.loc[:,['arrival_date_year','arrival_date_month','arrival_date_day_of_month']].to_numpy()
         arrival_np[:,1] = [self.month_str2num[i] for i in arrival_np[:,1]]
-        self.arrival_df = pd.DataFrame([date(i[0],i[1],i[2]).isoformat() for i in arrival_np], column = 'arrival_date')
-
+        self.arrival_df = pd.DataFrame([date(i[0],i[1],i[2]).isoformat() for i in arrival_np], columns = ['arrival_date'])
+        self.number_of_days_df = pd.DataFrame(self.train_df['stays_in_weekend_nights'] + 
+                                              self.train_df['stays_in_week_nights'], columns = ['number_of_days'])
         self.train_df['agent'] = self.train_df['agent'].apply(str)
         self.train_df['company'] = self.train_df['company'].apply(str)
         self.train_df['arrival_date_year'] = self.train_df['arrival_date_year'].apply(str)
@@ -36,28 +37,48 @@ class Dataset(object):
         global_mean = self.target_df[target].mean()
         temp_df = pd.concat([self.train_df[column_name], self.target_df[target]], axis=1)
         agg = temp_df.groupby(column_name)[target].agg(['count', 'mean'])
-        sector = temp_df.groupby(column_name)
         categorial_count = agg['count']
         categorial_mean = agg['mean']
         smooth = (categorial_count * categorial_mean + weight * global_mean) / (categorial_count + weight)
         if replace:
             self.train_df[column_name] = temp_df[column_name].map(smooth)
         else:
-            self.train_df[column_name + '_te'] = temp_df[column_name].map(smooth)
+            self.train_df[column_name + '_target_encoding'] = temp_df[column_name].map(smooth)
         return
-    def get_arrival_date():
+    def one_hot_encoding(self, column_name):
+        self.train_df[column_name] = pd.get_dummies(self.train_df[column_name], prefix = column_name)
         return
+    def get_arrival_date(self, to_numpy = False):
+        if to_numpy:
+            return self.arrival_df.to_numpy().squeeze()
+        else:
+            return self.arrival_df
+    def get_number_of_days(self, to_numpy = False):
+        if to_numpy:
+            return self.number_of_days_df.to_numpy().squeeze()
+        else:
+            return self.number_of_days_df
+    def get_adr(self, to_numpy = False):
+        if to_numpy:
+            return self.target_df[['adr']].to_numpy().squeeze()
+        else:
+            return self.target_df[['adr']]
+    def get_is_canceled(self, to_numpy = False):
+        if to_numpy:
+            return self.target_df[['is_canceled']].to_numpy().squeeze()
+        else:
+            return self.target_df[['is_canceled']]
+    def get_column(self, column_name, to_numpy = False):
+        if to_numpy:
+            return self.train_df[[column_name]].to_numpy().squeeze()
+        else:
+            return self.train_df[[column_name]]
+    def get_dataset(self, to_numpy = False):
+        if to_numpy:
+            return pd.get_dummies(self.train_df).to_numpy()
+        else:
+            return pd.get_dummies(self.train_df)
 
-categorial_labels = ['hotel', 'arrival_date_year', 'arrival_date_month', 'arrival_date_week_number', 'arrival_date_day_of_month',
-                   'meal', 'country', 'market_segment', 'distribution_channel', 'reserved_room_type', 'assigned_room_type',
-                   'deposit_type', 'agent', 'company', 'customer_type']
-categorial_labels = []
 
 
-from sklearn.linear_model import LinearRegression
-p = Dataset()
-for label in categorial_labels:
-    p.smooth_target_encoding(label, 'adr', 300, False)
-dfnp = pd.get_dummies(p.train_df).to_numpy()
-reg = LinearRegression().fit(dfnp, p.target_df['adr'].to_numpy())
-print(reg.score(dfnp, p.target_df['adr'].to_numpy()))
+
