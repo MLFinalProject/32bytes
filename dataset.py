@@ -11,14 +11,16 @@ class Dataset(object):
                      'July': 7, 'August': 8, 'September': 9,
                      'October': 10, 'November': 11, 'December': 12}
 
-    default_values = {'children': 0, 'country': 'NUL',
-                      'agent': 0, 'company': 0}
-
     def __init__(self):
         self.train_df = pd.read_csv('./data/train.csv')
+        self.train_df = self.train_df.drop(self.train_df[(self.train_df.adults+self.train_df.babies+self.train_df.children)==0].index)
+        self.train_df['country'].fillna(self.train_df['country'].mode().to_string(), inplace=True)
+        self.train_df['children'].fillna(round(self.train_df['children'].mean()), inplace=True)
+        self.train_df[['agent','company']] = self.train_df[['agent','company']].fillna(0.0)
+        self.train_df[['children', 'company', 'agent']] = self.train_df[['children', 'company', 'agent']].astype('int64')
         self.target_df = self.train_df.loc[:, ['is_canceled', 'adr']]
 
-        self.train_df = self.train_df.fillna(value=self.default_values)
+        
         self.train_df = self.train_df.drop(['ID', 'is_canceled', 'adr',
                                             'reservation_status',
                                             'reservation_status_date'], axis=1)
@@ -73,11 +75,13 @@ class Dataset(object):
             return self.train_df[[column_name]].to_numpy().squeeze()
         else:
             return self.train_df[[column_name]]
-    def get_dataset(self, to_numpy = False):
+    def get_train_dataset(self, to_numpy = False):
         if to_numpy:
             return pd.get_dummies(self.train_df).to_numpy()
         else:
             return pd.get_dummies(self.train_df)
+    def get_test_dataset(self, to_numpy = False):
+        return
 
 
 
