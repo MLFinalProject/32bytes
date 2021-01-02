@@ -91,7 +91,6 @@ class Dataset(object):
     
     def get_test_dataset(self):
         train_test_df = pd.get_dummies(self.train_test_df)
-        print(train_test_df['dataset'])
         test_df = train_test_df[train_test_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
         return test_df
 
