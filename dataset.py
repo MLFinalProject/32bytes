@@ -80,7 +80,7 @@ class Dataset(object):
         return temp_df
 
     def get_train_column(self, column_name):
-        temp_df = self.train_test_df[self.train_test_df['dataset'].eq("train")]
+        temp_df = self.train_test_df[self.train_test_df['dataset'].eq(self.data_label["train"])]
         return temp_df[[column_name]]
 
     def get_train_adr(self):
