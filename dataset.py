@@ -52,37 +52,6 @@ class Dataset(object):
         if replace:
             self.train_test_df.drop([column_name], axis = 1, inplace = True)
         return
-    def get_arrival_date(self, to_numpy = False):
-        if to_numpy:
-            return self.arrival_df.to_numpy().squeeze()
-        else:
-            return self.arrival_df
-    def get_number_of_days(self, to_numpy = False):
-        if to_numpy:
-            return self.number_of_days_df.to_numpy().squeeze()
-        else:
-            return self.number_of_days_df
-    def get_adr(self, to_numpy = False):
-        if to_numpy:
-            return self.target_df[['adr']].to_numpy().squeeze()
-        else:
-            return self.target_df[['adr']]
-    def get_is_canceled(self, to_numpy = False):
-        if to_numpy:
-            return self.target_df[['is_canceled']].to_numpy().squeeze()
-        else:
-            return self.target_df[['is_canceled']]
-    def get_column(self, column_name, to_numpy = False):
-        if to_numpy:
-            return self.train_df[[column_name]].to_numpy().squeeze()
-        else:
-            return self.train_df[[column_name]]
-    def get_dataset(self, to_numpy = False):
-        if to_numpy:
-            return pd.get_dummies(self.train_df).to_numpy()
-        else:
-            return pd.get_dummies(self.train_df)
-
 
 
     def add_feature(self, df):
@@ -122,7 +91,6 @@ class Dataset(object):
     
     def get_test_dataset(self):
         train_test_df = pd.get_dummies(self.train_test_df)
-        print(train_test_df['dataset'])
         test_df = train_test_df[train_test_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
         return test_df
 
