@@ -9,15 +9,16 @@ from dataset import Dataset
 class DataInsight():
     def __init__(self):
         self.dataset = Dataset()
+        self.train_df = 
 
     def plot_attribute_adr(self, attribute):
-        attribute = self.dataset.get_column(attribute, True)
+        attribute = self.dataset.get_train_column(attribute)
         adr = self.dataset.get_adr(True)
         plt.plot(attribute, adr, ',')
         plt.show()
 
     def plot_attribute_adr_mean(self, attribute):
-        attrbute = self.dataset.get_column(attribute, True)
+        attrbute = self.dataset.get_train_column(attribute)
         attribute = list(set(attribute))
         attribute.sort()
         avg_list = []
