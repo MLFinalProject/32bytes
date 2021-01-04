@@ -71,15 +71,15 @@ class Dataset(object):
         return train_df
 
     def get_train_arrival_date(self):
-        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq("train")].drop(['dataset'], axis = 1)
+        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq(self.data_label["train"])].drop(['dataset'], axis = 1)
         return temp_df
 
     def get_train_number_of_days(self):
-        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq("train")].drop(['dataset'], axis = 1)
+        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq(self.data_label["train"])].drop(['dataset'], axis = 1)
         return temp_df
 
     def get_train_column(self, column_name):
-        temp_df = self.train_test_df[self.train_test_df['dataset'].eq("train")]
+        temp_df = self.train_test_df[self.train_test_df['dataset'].eq(self.data_label["train"])]
         return temp_df[[column_name]]
 
     def get_train_adr(self):
@@ -95,16 +95,12 @@ class Dataset(object):
         return test_df
 
     def get_test_arrival_date(self):
-        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq("test")].drop(['dataset'], axis = 1)
+        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
         return temp_df
 
     def get_test_number_of_days(self):
-        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq("test")].drop(['dataset'], axis = 1)
+        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
         return temp_df
 
-# p = Dataset()
-# x_train = p.get_train_dataset()
-# x_test = p.get_test_dataset()
-# print(x_train)
-# print(x_test)
+
 
