@@ -26,28 +26,42 @@ class DataInsight():
     def plot_attribute_adr_mean(self, attribute):
         attribute_element = self.dataset.get_train_column(attribute).to_numpy().squeeze()
         attribute_element = list(set(attribute_element))
-        attribute_element.sort()
+        
+        if attribute == "arrival_date_day_of_month":
+            attribute_element = [int(i) for i in attribute_element]
+            attribute_element.sort()
+            attribute_element = [str(i) for i in attribute_element]
+            # print(attribute_element)
+            # print(type(attribute_element[0]))
+        else:
+            attribute_element.sort()
         avg_list = []
         num_list = []
+        std_list = []
         for i in attribute_element:
             avg = np.average(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'adr'].to_numpy())
+            std = np.std(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'adr'].to_numpy())
             num = np.average(len(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'adr'].to_numpy()))
             avg_list.append(avg)
             num_list.append(num)
+            std_list.append(std)
             # print("average of {} = {}, which has {} samples".format(i, avg, num))
-        # plt.figure()
-        # plt.plot(attribute_element, avg_list, 'r.')
-        # plt.xlabel(attribute)
-        # plt.ylabel('adr')
+        # print(len(avg_list))
+        # print(len(std_list))
+        plt.figure()
+        plt.errorbar(attribute_element, avg_list, std_list, linestyle='None', marker='^')
+        plt.xlabel(attribute)
+        plt.ylabel('adr_w_std')
         # plt.savefig("./data_adr_analysis/img/{}_adr_mean.png".format(attribute))
-        # # plt.show()
+        plt.savefig("./data_adr_analysis/img_w_std/{}_adr_mean_std.png".format(attribute))
+        # plt.show()
 
         # plt.figure()
         # plt.plot(attribute_element, num_list, 'b.')
         # plt.xlabel(attribute)
         # plt.ylabel('num')
-        # plt.savefig("./data_num_analysis/img/{}_num.png".format(attribute))
-        # # plt.show()
+        # # plt.savefig("./data_num_analysis/img/{}_num.png".format(attribute))
+        # plt.show()
         # # plt.show()
 
         data_num_df = pd.DataFrame({attribute: num_list})
