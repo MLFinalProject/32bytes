@@ -1,7 +1,8 @@
+import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
-
+import time
 
 class Classification:
     """docstring for ClassName"""
@@ -17,10 +18,12 @@ class Classification:
 
 
     def train(self):
-        print()
+        print('\n---is_canceled Training---')
+        self.start_time = time.time()
 
     def predict(self):
-        print()
+        print('\n---is_canceled Predicting---')
+        self.start_time = time.time()
 
 class TheDecisionTree(Classification):
     """docstring for DecisionTree"""
@@ -31,6 +34,9 @@ class TheDecisionTree(Classification):
     def train(self):
         super().train()
         self.dt = self.dt.fit(self.x_train,self.y_train)
+        train_acc = self.dt.score(self.x_train, self.y_train)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
 
     def v_fold_validate(self):
         super().v_fold_validate()
@@ -42,7 +48,9 @@ class TheDecisionTree(Classification):
 
     def predict(self):
         super().predict()
-        return self.dt.predict(self.x_test)
+        predicts = pd.DataFrame(self.dt.predict(self.x_test), columns = ['is_canceled'])
+        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
 
 class TheLogisticRegression(Classification):
     """docstring for DecisionTree"""
@@ -53,7 +61,15 @@ class TheLogisticRegression(Classification):
     def train(self):
         super().train()
         self.reg = self.reg.fit(self.x_train,self.y_train)
-        print(self.reg.score(self.x_train,self.y_train))
+        train_acc = self.reg.score(self.x_train,self.y_train)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
+
+    def predict(self):
+        super().predict()
+        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['is_canceled'])
+        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
 
     def v_fold_validate(self):
         super().v_fold_validate()
