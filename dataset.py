@@ -72,11 +72,11 @@ class Dataset(object):
         return train_df
 
     def get_train_arrival_date(self):
-        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq("train")].drop(['dataset'], axis = 1)
+        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq(self.data_label["train"])].drop(['dataset'], axis = 1)
         return temp_df
 
     def get_train_number_of_days(self):
-        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq("train")].drop(['dataset'], axis = 1)
+        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq(self.data_label["train"])].drop(['dataset'], axis = 1)
         return temp_df
 
     def get_train_column(self, column_name):
@@ -93,19 +93,15 @@ class Dataset(object):
     def get_test_dataset(self):
         train_test_df = pd.get_dummies(self.train_test_df)
         test_df = train_test_df[train_test_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
-        return test_df
+        return test_df.reset_index(drop = True)
 
     def get_test_arrival_date(self):
-        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq("test")].drop(['dataset'], axis = 1)
-        return temp_df
+        temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
+        return temp_df.reset_index(drop = True)
 
     def get_test_number_of_days(self):
-        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq("test")].drop(['dataset'], axis = 1)
-        return temp_df
+        temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
+        return temp_df.reset_index(drop = True)
 
-# p = Dataset()
-# x_train = p.get_train_dataset()
-# x_test = p.get_test_dataset()
-# print(x_train)
-# print(x_test)
+
 

@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
-from dataset import *
+
 
 def predict(input_df,filename='output.csv'):
-	#p = Dataset()
 	#input_df = pd.concat([p.get_arrival_date(), p.get_is_canceled(), p.get_adr(), p.get_number_of_days()], axis=1)
 
 	input_df['is_canceled'] = input_df['is_canceled'] * (-1) + 1
