@@ -182,40 +182,40 @@ adr = train_df.loc[:,'adr'].to_numpy()
 #     print("average of {} = {}".format(i, avg))
 
 
-# #  --- country ---
-# new_train_df = train_df.loc[:, ['country', 'adr']].dropna()
-# country = new_train_df.loc[:, 'country']
-# adr_country = new_train_df.loc[:, 'adr']
-# plt.plot(country, adr_country, ',')
-# plt.ylim(0, 1000)
-# plt.show()
+#  --- country ---
+new_train_df = train_df.loc[:, ['country', 'adr']].dropna()
+country = new_train_df.loc[:, 'country']
+adr_country = new_train_df.loc[:, 'adr']
+plt.plot(country, adr_country, ',')
+plt.ylim(0, 1000)
+plt.show()
 
-# country = list(set(country))
-# print(country)
-# country.sort()
-# avg_list = []
-# num_list = []
-# for i in country:
-#     avg = np.average(train_df.loc[train_df['country'] == i].loc[:, 'adr'].to_numpy())
-#     num = np.average(len(train_df.loc[train_df['country'] == i].loc[:, 'adr'].to_numpy()))
-#     avg_list.append(avg)
-#     num_list.append(num)
-#     print("average of {} = {}, which has {} samples".format(i, avg, num))
+country = list(set(country))
+print(country)
+country.sort()
+avg_list = []
+num_list = []
+for i in country:
+    avg = np.average(train_df.loc[train_df['country'] == i].loc[:, 'adr'].to_numpy())
+    num = np.average(len(train_df.loc[train_df['country'] == i].loc[:, 'adr'].to_numpy()))
+    avg_list.append(avg)
+    num_list.append(num)
+    print("average of {} = {}, which has {} samples".format(i, avg, num))
 
-# # The code below are wrong due to its sorting method
-# avg_list = [avg for _, avg in sorted(zip(num_list, avg_list))]
-# country = [cou for _, cou in sorted(zip(num_list, country))]
-# num_list.sort()
+# The code below are wrong due to its sorting method
+avg_list = [avg for _, avg in sorted(zip(num_list, avg_list))]
+country = [cou for _, cou in sorted(zip(num_list, country))]
+num_list.sort()
 
-# print(country)
-# print(num_list)
-# print(avg_list)
+print(country)
+print(num_list)
+print(avg_list)
 
-# print(max(avg_list))
-# print(max(num_list))
-# plt.plot(country, avg_list, 'r.')
-# # plt.plot(country, num_list, 'b.')
-# plt.show()
+print(max(avg_list))
+print(max(num_list))
+plt.plot(country, avg_list, 'r.')
+# plt.plot(country, num_list, 'b.')
+plt.show()
 
 
 
@@ -544,26 +544,26 @@ adr = train_df.loc[:,'adr'].to_numpy()
 # plt.show()
 
 
-#  --- total_of_special_requests ---
-total_of_special_requests = train_df.loc[:, 'total_of_special_requests']
-plt.plot(total_of_special_requests, adr, ',')
-plt.ylim(0, 1000)
-plt.show()
+# #  --- total_of_special_requests ---
+# total_of_special_requests = train_df.loc[:, 'total_of_special_requests']
+# plt.plot(total_of_special_requests, adr, ',')
+# plt.ylim(0, 1000)
+# plt.show()
 
-total_of_special_requests = list(set(total_of_special_requests))
-total_of_special_requests.sort()
-avg_list = []
-num_list = []
-for i in total_of_special_requests:
-    avg = np.average(train_df.loc[train_df['total_of_special_requests'] == i].loc[:, 'adr'].to_numpy())
-    num = np.average(len(train_df.loc[train_df['total_of_special_requests'] == i].loc[:, 'adr'].to_numpy()))
-    avg_list.append(avg)
-    num_list.append(num)
-    print("average of {} = {}, which has {} samples".format(i, avg, num))
+# total_of_special_requests = list(set(total_of_special_requests))
+# total_of_special_requests.sort()
+# avg_list = []
+# num_list = []
+# for i in total_of_special_requests:
+#     avg = np.average(train_df.loc[train_df['total_of_special_requests'] == i].loc[:, 'adr'].to_numpy())
+#     num = np.average(len(train_df.loc[train_df['total_of_special_requests'] == i].loc[:, 'adr'].to_numpy()))
+#     avg_list.append(avg)
+#     num_list.append(num)
+#     print("average of {} = {}, which has {} samples".format(i, avg, num))
 
-plt.plot(total_of_special_requests, avg_list, 'r.')
-# plt.plot(total_of_special_requests, num_list, 'b.')
-plt.show()
+# plt.plot(total_of_special_requests, avg_list, 'r.')
+# # plt.plot(total_of_special_requests, num_list, 'b.')
+# plt.show()
 
 
 
