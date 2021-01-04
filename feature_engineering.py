@@ -11,3 +11,7 @@ def gen_net_canceled_feature(data_frame):
 	data_frame.loc[ data_frame['previous_cancellations'] > data_frame['previous_bookings_not_canceled'] , 'net_canceled'] = 1
 	return data_frame[['net_canceled']]
 
+def transfer_not_enough_data_to_mean(data_frame, threshold):
+	attribute_mean = round(data_frame.mean())
+	data_frame.loc[data_frame > threshold] = attribute_mean
+	return data_frame
