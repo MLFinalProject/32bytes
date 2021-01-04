@@ -20,7 +20,7 @@ class DataInsight():
         # print(adr)
         plt.figure()
         plt.plot(attribute_element, adr, ',')
-        plt.savefig("./data_adr_analysis/{}_adr.png".format(attribute))
+        plt.savefig("./data_adr_analysis/img/{}_adr.png".format(attribute))
         # plt.show()
 
     def plot_attribute_adr_mean(self, attribute):
@@ -35,10 +35,23 @@ class DataInsight():
             avg_list.append(avg)
             num_list.append(num)
             # print("average of {} = {}, which has {} samples".format(i, avg, num))
-        plt.figure()
-        plt.plot(attribute_element, avg_list, 'r.')
-        plt.savefig("./data_adr_analysis/{}_adr_mean.png".format(attribute))
-        # plt.show()
+        # plt.figure()
+        # plt.plot(attribute_element, avg_list, 'r.')
+        # plt.xlabel(attribute)
+        # plt.ylabel('adr')
+        # plt.savefig("./data_adr_analysis/img/{}_adr_mean.png".format(attribute))
+        # # plt.show()
+
+        # plt.figure()
+        # plt.plot(attribute_element, num_list, 'b.')
+        # plt.xlabel(attribute)
+        # plt.ylabel('num')
+        # plt.savefig("./data_num_analysis/img/{}_num.png".format(attribute))
+        # # plt.show()
+        # # plt.show()
+
+        data_num_df = pd.DataFrame({attribute: num_list})
+        data_num_df.to_csv(r'./data_num_analysis/csv/{}_num.csv'.format(attribute), index=True)
 
     def plot_attribute_is_canceled_mean(self, attribute):
         attribute_element = self.dataset.get_train_column(attribute).to_numpy().squeeze()
@@ -54,4 +67,4 @@ class DataInsight():
             # print("average of {} = {}, which has {} samples".format(i, avg, num))
         plt.figure()
         plt.plot(attribute_element, avg_list, 'r.')
-        plt.savefig("./data_is_canceled_analysis/{}_is_canceled_mean.png".format(attribute))
+        plt.savefig("./data_is_canceled_analysis/img/{}_is_canceled_mean.png".format(attribute))
