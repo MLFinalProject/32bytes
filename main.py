@@ -15,8 +15,6 @@ for key in attribute_threshold_dict:
     new_attribute_df = transfer_not_enough_data_to_mean(hotel_is_cancel.get_feature(key), attribute_threshold_dict[key])
     hotel_is_cancel.remove_feature(key)
     hotel_is_cancel.add_feature(new_attribute_df)
-    print(hotel_is_cancel.get_feature(key))
-exit()
 
 room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type', 'assigned_room_type']))
 net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
