@@ -1,6 +1,8 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import BayesianRidge
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 import time
@@ -102,18 +104,72 @@ class TheSVRegression(Regression):
 		predicts = pd.DataFrame(self.svr.predict(self.x_test), columns = ['adr'])
 		print(f'ADR prediction done in {time.time()-self.start_time:.3f}(s).')
 		return predicts
-from feature_engineering import *
-from dataset import Dataset
-hotel = Dataset()
-room_feature = gen_room_feature(hotel.get_feature(['reserved_room_type', 'assigned_room_type']))
-net_canceled_feature = gen_net_canceled_feature(hotel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
-hotel.add_feature(room_feature)
-hotel.add_feature(net_canceled_feature)
-hotel.remove_feature(['children', 'stays_in_weekend_nights'])
 
-x_train = hotel.get_train_dataset()
-x_test = hotel.get_test_dataset()
-y_train = hotel.get_train_adr()
+class TheLasso(Regression):
+	def __init__(self, x_train, y_train, x_test):
+		super().__init__(x_train, y_train, x_test)
+		self.lasso = Lasso(alpha = 0.1)
+	
+	def v_fold_validate(self):
+		super().v_fold_validate()
+		self.lasso = self.lasso.fit(self.x_val_train, self.y_val_train)
+		train_acc = self.lasso.score(self.x_val_train, self.y_val_train)
+		test_acc = self.lasso.score(self.x_val_test, self.y_val_test)
+		print('---Cross-Validation Testing---')
+		print(f'Training Accuracy of our model is: {train_acc}')
+		print(f'Cross-Validation Test Accuracy of our model is: {test_acc}')
+	
+	def train(self):
+		super().train()
+		self.lasso = self.lasso.fit(self.x_train,self.y_train)
+		train_acc = self.lasso.score(self.x_train,self.y_train)
+		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+		print(f'ADR training done in {time.time()-self.start_time:.3f}(s).')
+		
+	def predict(self):
+		super().predict()
+		predicts = pd.DataFrame(self.lasso.predict(self.x_test), columns = ['adr'])
+		print(f'ADR prediction done in {time.time()-self.start_time:.3f}(s).')
+		return predicts
+		
+class TheBayesianRidge(Regression):
+	def __init__(self, x_train, y_train, x_test):
+		super().__init__(x_train, y_train, x_test)
+		self.br = BayesianRidge()
+	
+	def v_fold_validate(self):
+		super().v_fold_validate()
+		self.br = self.br.fit(self.x_val_train, self.y_val_train)
+		train_acc = self.br.score(self.x_val_train, self.y_val_train)
+		test_acc = self.br.score(self.x_val_test, self.y_val_test)
+		print('---Cross-Validation Testing---')
+		print(f'Training Accuracy of our model is: {train_acc}')
+		print(f'Cross-Validation Test Accuracy of our model is: {test_acc}')
+	
+	def train(self):
+		super().train()
+		self.br = self.br.fit(self.x_train,self.y_train)
+		train_acc = self.br.score(self.x_train,self.y_train)
+		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+		print(f'ADR training done in {time.time()-self.start_time:.3f}(s).')
+		
+	def predict(self):
+		super().predict()
+		predicts = pd.DataFrame(self.br.predict(self.x_test), columns = ['adr'])
+		print(f'ADR prediction done in {time.time()-self.start_time:.3f}(s).')
+		return predicts
+# from feature_engineering import *
+# from dataset import Dataset
+# hotel = Dataset()
+# room_feature = gen_room_feature(hotel.get_feature(['reserved_room_type', 'assigned_room_type']))
+# net_canceled_feature = gen_net_canceled_feature(hotel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
+# hotel.add_feature(room_feature)
+# hotel.add_feature(net_canceled_feature)
+# hotel.remove_feature(['children', 'stays_in_weekend_nights'])
+
+# x_train = hotel.get_train_dataset()
+# x_test = hotel.get_test_dataset()
+# y_train = hotel.get_train_adr()
 
 # lin_reg = TheLinearRegression(x_train, y_train, x_test)
 # print(lin_reg.v_fold_validate())
@@ -125,8 +181,18 @@ y_train = hotel.get_train_adr()
 # DR.train()
 # print(DR.predict())
 
-print(y_train)
-svr = TheSVRegression(x_train, y_train['adr'], x_test)
-print(svr.v_fold_validate())
+# print(y_train)
+# svr = TheSVRegression(x_train, y_train['adr'], x_test)
+# print(svr.v_fold_validate())
 #svr.train()
 #print(svr.predict())
+
+# LAS = TheLasso(x_train, y_train, x_test)
+# print(LAS.v_fold_validate())
+# LAS.train()
+# print(LAS.predict())
+
+# BR = TheBayesianRidge(x_train, y_train['adr'], x_test)
+# print(BR.v_fold_validate())
+# BR.train()
+# print(BR.predict())
