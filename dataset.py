@@ -10,6 +10,7 @@ class Dataset(object):
                      'July': 7, 'August': 8, 'September': 9,
                      'October': 10, 'November': 11, 'December': 12}
     data_label = {'train': 0, 'test': 1}
+    
     def __init__(self):
         train_df = pd.read_csv('./data/train.csv')
         test_df = pd.read_csv('./data/test.csv')
