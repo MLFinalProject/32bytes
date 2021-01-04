@@ -92,15 +92,15 @@ class Dataset(object):
     def get_test_dataset(self):
         train_test_df = pd.get_dummies(self.train_test_df)
         test_df = train_test_df[train_test_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
-        return test_df
+        return test_df.reset_index(drop = True)
 
     def get_test_arrival_date(self):
         temp_df = self.arrival_date_df[self.arrival_date_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
-        return temp_df
+        return temp_df.reset_index(drop = True)
 
     def get_test_number_of_days(self):
         temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
-        return temp_df
+        return temp_df.reset_index(drop = True)
 
 
 
