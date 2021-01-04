@@ -55,7 +55,7 @@ class TheDecisionTreeRegressor(Regression):
 	
 	def v_fold_validate(self):
 		super().v_fold_validate()
-		self.reg = self.dr.fit(self.x_val_train, self.y_val_train)
+		self.dr = self.dr.fit(self.x_val_train, self.y_val_train)
 		train_acc = self.dr.score(self.x_val_train, self.y_val_train)
 		test_acc = self.dr.score(self.x_val_test, self.y_val_test)
 		print('---Cross-Validation Testing---')
