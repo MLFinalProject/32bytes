@@ -59,7 +59,7 @@ class TheDecisionTreeRegressor(Regression):
 		train_acc = self.dr.score(self.x_val_train, self.y_val_train)
 		test_acc = self.dr.score(self.x_val_test, self.y_val_test)
 		print('---Cross-Validation Testing---')
-		print(f'Training Accuracy of our model is: {train_acc}')cr
+		print(f'Training Accuracy of our model is: {train_acc}')
 		print(f'Cross-Validation Test Accuracy of our model is: {test_acc}')
 	
 	def train(self):
