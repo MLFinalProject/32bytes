@@ -116,6 +116,22 @@ class TheRandomForest(Classification):
         print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
         return predicts
 
+    def three_seed_validate(self):
+        self.start_time = time.time()
+        for seed in [1126]:
+            self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+                self.x_train, self.y_train, test_size=0.2, random_state=seed)
+            self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+            train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+            test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+            print(f'seed {seed}\t train_acc:{train_acc:.3f}, test_acc:{test_acc:.3f}')
+        print(f'experiment done in {time.time()-self.start_time:.3f}(s).')
+        print('--------------------\n')
+
+
+
+
+
 class TheGradientBoost(Classification):
     """docstring for TheRandomForest"""
     def __init__(self, x_train, y_train, x_test):
@@ -176,7 +192,15 @@ class TheXGBoost(Classification):
 if __name__ == '__main__':
     from feature_engineering import *
     from dataset import Dataset
+
     hotel_is_cancel = Dataset()
+
+    attribute_threshold_dict = {"adults":3, "babies":2, "children":3, "required_car_parking_spaces":2, "stays_in_week_nights":20, "stays_in_weekend_nights":10}
+    for key in attribute_threshold_dict:
+        new_attribute_df = transfer_not_enough_data_to_mean(hotel_is_cancel.get_feature([key]), attribute_threshold_dict[key])
+        hotel_is_cancel.remove_feature([key])
+        hotel_is_cancel.add_feature(new_attribute_df)
+
     room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type', 'assigned_room_type']))
     net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
     hotel_is_cancel.add_feature(room_feature)
@@ -185,10 +209,18 @@ if __name__ == '__main__':
     x_test_is_canceled = hotel_is_cancel.get_test_dataset()
     y_train_is_canceled = hotel_is_cancel.get_train_is_canceled()
     clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled)
-    clf.v_fold_validate()
 
-    for n_estimators_i in [100, 150, 200]:
-        pass
-
+    a = []
+    for max_samples_i in [0.4]:
+        for n_estimators_i in [64, 128, 256]:
+            for max_depth_i in [None]:
+                    print(f'Start experimenting n_estimators = {n_estimators_i}, max_depth = {max_depth_i}, max_samples = {max_samples_i}.')
+                    clf.clf = RandomForestClassifier(n_estimators=n_estimators_i, random_state = 0, n_jobs = -1, max_depth = max_depth_i, bootstrap=True, max_samples = max_samples_i)
+                    
+                    clf.three_seed_validate()
+                    a.append(clf.clf.predict(clf.x_val_test))
+    b = a[0] == a[1]
+    c = a[1] == a[2]
+    print(len(a[0]), np.sum(b==c))
 		
 		
