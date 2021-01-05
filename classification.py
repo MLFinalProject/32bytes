@@ -116,9 +116,14 @@ class TheRandomForest(Classification):
         print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
         return predicts
 
+    def ensemble(self):
+        self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+            self.x_train, self.y_train, test_size=0.2, random_state=1126)
+    
     def three_seed_validate(self):
         self.start_time = time.time()
-        for seed in [1126]:
+        seed = 1126
+        for seed in [123, 1126, 390625]:
             self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
                 self.x_train, self.y_train, test_size=0.2, random_state=seed)
             self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
@@ -195,11 +200,11 @@ if __name__ == '__main__':
 
     hotel_is_cancel = Dataset()
 
-    attribute_threshold_dict = {"adults":3, "babies":2, "children":3, "required_car_parking_spaces":2, "stays_in_week_nights":20, "stays_in_weekend_nights":10}
-    for key in attribute_threshold_dict:
-        new_attribute_df = transfer_not_enough_data_to_mean(hotel_is_cancel.get_feature([key]), attribute_threshold_dict[key])
-        hotel_is_cancel.remove_feature([key])
-        hotel_is_cancel.add_feature(new_attribute_df)
+    # attribute_threshold_dict = {"adults":3, "babies":2, "children":3, "required_car_parking_spaces":2, "stays_in_week_nights":20, "stays_in_weekend_nights":10}
+    # for key in attribute_threshold_dict:
+    #     new_attribute_df = transfer_not_enough_data_to_mean(hotel_is_cancel.get_feature([key]), attribute_threshold_dict[key])
+    #     hotel_is_cancel.remove_feature([key])
+    #     hotel_is_cancel.add_feature(new_attribute_df)
 
     room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type', 'assigned_room_type']))
     net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
@@ -210,17 +215,26 @@ if __name__ == '__main__':
     y_train_is_canceled = hotel_is_cancel.get_train_is_canceled()
     clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled)
 
-    a = []
+    predictions = []
+    ensemble_count = 0
+    clf.ensemble()
     for max_samples_i in [0.4]:
-        for n_estimators_i in [64, 128, 256]:
-            for max_depth_i in [None]:
-                    print(f'Start experimenting n_estimators = {n_estimators_i}, max_depth = {max_depth_i}, max_samples = {max_samples_i}.')
-                    clf.clf = RandomForestClassifier(n_estimators=n_estimators_i, random_state = 0, n_jobs = -1, max_depth = max_depth_i, bootstrap=True, max_samples = max_samples_i)
-                    
+        for n_estimators_i in [512]:
+            for max_depth_i in [50]:
+                for random_state_i in [1126]:
+                    ensemble_count += 1
+                    print(f'No.{ensemble_count} experiment n_estimators = {n_estimators_i}, max_depth = {max_depth_i}, max_samples = {max_samples_i}, seed = {random_state_i}.')
+                    clf.clf = RandomForestClassifier(n_estimators=n_estimators_i, n_jobs = -1, max_depth = max_depth_i, bootstrap=True, max_samples = max_samples_i, random_state = random_state_i)                    
                     clf.three_seed_validate()
-                    a.append(clf.clf.predict(clf.x_val_test))
-    b = a[0] == a[1]
-    c = a[1] == a[2]
-    print(len(a[0]), np.sum(b==c))
+                    # predictions.append(clf.clf.predict(clf.x_val_test))
+                    # 0.4, 512, 50
+    # predictions = np.stack(predictions)
+    # y_pred = np.sum(predictions, axis=0)
+    # threshold = ensemble_count//2
+    # print(f'ensemble_count = {ensemble_count}, threshold = {threshold}')
+    # y_pred[y_pred <= threshold] = 0
+    # y_pred[y_pred > threshold] = 1
+    # ensemble_acc = np.sum(clf.y_val_test == y_pred)/len(y_pred)
+    # print(f'ensemble_acc is {ensemble_acc:.3f}')
 		
 		
