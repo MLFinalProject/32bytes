@@ -1,8 +1,10 @@
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from xgboost.sklearn import XGBClassifier
 import time
 
@@ -10,7 +12,7 @@ class Classification:
     """docstring for ClassName"""
     def __init__(self, x_train, y_train, x_test):
         self.x_train = x_train
-        self.y_train = y_train
+        self.y_train = np.ravel(y_train)
         self.x_test = x_test
         
 
@@ -90,6 +92,35 @@ class TheRandomForest(Classification):
     def __init__(self, x_train, y_train, x_test):
         super().__init__(x_train, y_train, x_test)
         self.clf = RandomForestClassifier(n_estimators=100, random_state = 0)
+
+    def train(self):
+        super().train()
+        self.clf = self.clf.fit(self.x_train,self.y_train)
+        train_acc = self.clf.score(self.x_train, self.y_train)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
+
+
+    def v_fold_validate(self):
+        super().v_fold_validate()
+        self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'Test Accuracy of our model is: {test_acc:.3f}')
+        print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
+
+    def predict(self):
+        super().predict()
+        predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
+        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
+
+class TheGradientBoost(Classification):
+    """docstring for TheRandomForest"""
+    def __init__(self, x_train, y_train, x_test):
+        super().__init__(x_train, y_train, x_test)
+        self.clf = GradientBoostingClassifier(random_state = 0)
 
     def train(self):
         super().train()

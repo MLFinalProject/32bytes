@@ -1,17 +1,20 @@
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 import time
 
 class Regression:
 	def __init__(self, x_train, y_train, x_test):
 		self.x_train = x_train
-		self.y_train = y_train
+		self.y_train = np.ravel(y_train)
 		self.x_test = x_test
 		
 	def v_fold_validate(self):
-		self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(self.x_train, self.y_train, test_size = 0.2, random_state = 9548)
+		self.start_time = time.time()
+		self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(self.x_train, self.y_train, test_size = 0.2, random_state = 0)
     
 	def train(self):
 		print('\n---adr Training---')
@@ -34,6 +37,7 @@ class TheLinearRegression(Regression):
 		print('---Cross-Validation Testing---')
 		print(f'Training Accuracy of our model is: {train_acc}')
 		print(f'Cross-Validation Test Accuracy of our model is: {test_acc}')
+		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
 	
 	def train(self):
 		super().train()
@@ -45,34 +49,63 @@ class TheLinearRegression(Regression):
 	def predict(self):
 		super().predict()
 		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-		print(f'ADR prediction done in {time.time()-self.start_time:.3f}(s).')
+		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
 		return predicts
 
 class TheDecisionTreeRegressor(Regression):
 	def __init__(self, x_train, y_train, x_test):
 		super().__init__(x_train, y_train, x_test)
-		self.dr = DecisionTreeRegressor(random_state = 5)
+		self.reg = DecisionTreeRegressor(random_state = 5)
 	
 	def v_fold_validate(self):
 		super().v_fold_validate()
-		self.dr = self.dr.fit(self.x_val_train, self.y_val_train)
-		train_acc = self.dr.score(self.x_val_train, self.y_val_train)
-		test_acc = self.dr.score(self.x_val_test, self.y_val_test)
+		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
 		print('---Cross-Validation Testing---')
-		print(f'Training Accuracy of our model is: {train_acc}')
-		print(f'Cross-Validation Test Accuracy of our model is: {test_acc}')
+		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+		print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
+		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
 	
 	def train(self):
 		super().train()
-		self.dr = self.dr.fit(self.x_train,self.y_train)
-		train_acc = self.dr.score(self.x_train,self.y_train)
+		self.reg = self.reg.fit(self.x_train,self.y_train)
+		train_acc = self.reg.score(self.x_train,self.y_train)
 		print(f'Training Accuracy of our model is: {train_acc:.3f}')
-		print(f'ADR training done in {time.time()-self.start_time:.3f}(s).')
+		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
 		
 	def predict(self):
 		super().predict()
-		predicts = pd.DataFrame(self.dr.predict(self.x_test), columns = ['adr'])
-		print(f'ADR prediction done in {time.time()-self.start_time:.3f}(s).')
+		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+		return predicts
+
+class TheGradientBoostingRegressor(Regression):
+	def __init__(self, x_train, y_train, x_test):
+		super().__init__(x_train, y_train, x_test)
+		self.reg = GradientBoostingRegressor(random_state = 0, n_estimators = 100, loss='lad', max_depth = 4)
+	
+	def v_fold_validate(self):
+		super().v_fold_validate()
+		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+		print('---Cross-Validation Testing---')
+		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+		print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
+		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+	
+	def train(self):
+		super().train()
+		self.reg = self.reg.fit(self.x_train,self.y_train)
+		train_acc = self.reg.score(self.x_train,self.y_train)
+		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+		
+	def predict(self):
+		super().predict()
+		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
 		return predicts
 
 # from feature_engineering import *

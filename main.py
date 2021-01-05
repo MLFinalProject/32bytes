@@ -25,7 +25,7 @@ x_test_is_canceled = hotel_is_cancel.get_test_dataset()
 y_train_is_canceled = hotel_is_cancel.get_train_is_canceled()
 clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled)
 clf.v_fold_validate()
-exit()
+
 clf.train()
 is_canceled_df = clf.predict()
 
@@ -34,10 +34,11 @@ hotel_adr = Dataset()
 x_train_adr = hotel_adr.get_train_dataset()
 x_test_adr = hotel_adr.get_test_dataset()
 y_train_adr = hotel_adr.get_train_adr()
-dtregressor = TheDecisionTreeRegressor(x_train_adr, y_train_adr, x_test_adr)
-# dtregressor.v_fold_validate()
-dtregressor.train()
-adr_df = dtregressor.predict()
+reg = TheGradientBoostingRegressor(x_train_adr, y_train_adr, x_test_adr)
+reg.v_fold_validate()
+
+reg.train()
+adr_df = reg.predict()
 
 
 predict_df = pd.concat([hotel_is_cancel.get_test_arrival_date(), is_canceled_df, adr_df, hotel_is_cancel.get_test_number_of_days()], axis=1)
