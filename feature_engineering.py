@@ -13,5 +13,6 @@ def gen_net_canceled_feature(data_frame):
 
 def transfer_not_enough_data_to_mean(data_frame, threshold):
 	attribute_mean = round(data_frame.mean())
-	data_frame.loc[data_frame > threshold] = attribute_mean
+	column_name = data_frame.columns[0]
+	data_frame[column_name].values[data_frame[column_name] > threshold] = attribute_mean + 100
 	return data_frame
