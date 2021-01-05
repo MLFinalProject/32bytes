@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
 import time
 
 class Regression:
@@ -14,7 +15,7 @@ class Regression:
 		
 	def v_fold_validate(self):
 		self.start_time = time.time()
-		self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(self.x_train, self.y_train, test_size = 0.2, random_state = 0)
+		self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(self.x_train, self.y_train, test_size = 0.2, random_state = 390625)
     
 	def train(self):
 		print('\n---adr Training---')
@@ -84,6 +85,34 @@ class TheGradientBoostingRegressor(Regression):
 	def __init__(self, x_train, y_train, x_test):
 		super().__init__(x_train, y_train, x_test)
 		self.reg = GradientBoostingRegressor(random_state = 0, n_estimators = 100, loss='lad', max_depth = 4)
+	
+	def v_fold_validate(self):
+		super().v_fold_validate()
+		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+		print('---Cross-Validation Testing---')
+		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+		print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
+		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+	
+	def train(self):
+		super().train()
+		self.reg = self.reg.fit(self.x_train,self.y_train)
+		train_acc = self.reg.score(self.x_train,self.y_train)
+		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+		
+	def predict(self):
+		super().predict()
+		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+		return predicts
+
+class TheRandomForestRegressor(Regression):
+	def __init__(self, x_train, y_train, x_test):
+		super().__init__(x_train, y_train, x_test)
+		self.reg = RandomForestRegressor(random_state = 0, n_estimators = 100, n_jobs = -1)
 	
 	def v_fold_validate(self):
 		super().v_fold_validate()
