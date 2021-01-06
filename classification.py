@@ -91,7 +91,7 @@ class TheRandomForest(Classification):
     """docstring for TheRandomForest"""
     def __init__(self, x_train, y_train, x_test):
         super().__init__(x_train, y_train, x_test)
-        self.clf = RandomForestClassifier(n_estimators=100, random_state = 0, n_jobs = -1)
+        self.clf = RandomForestClassifier(min_impurity_decrease=1e-6, n_estimators=128, random_state = 6174, n_jobs = -1)
 
     def train(self):
         super().train()
@@ -218,13 +218,13 @@ if __name__ == '__main__':
     predictions = []
     ensemble_count = 0
     clf.ensemble()
-    for max_samples_i in [0.4]:
-        for n_estimators_i in [512]:
-            for max_depth_i in [50]:
-                for random_state_i in [1126]:
+    for max_samples_i in [None]:
+        for n_estimators_i in [128]:
+            for max_depth_i in [None]:
+                for random_state_i in [6174]:
                     ensemble_count += 1
                     print(f'No.{ensemble_count} experiment n_estimators = {n_estimators_i}, max_depth = {max_depth_i}, max_samples = {max_samples_i}, seed = {random_state_i}.')
-                    clf.clf = RandomForestClassifier(n_estimators=n_estimators_i, n_jobs = -1, max_depth = max_depth_i, bootstrap=True, max_samples = max_samples_i, random_state = random_state_i)                    
+                    clf.clf = RandomForestClassifier(min_impurity_decrease=1e-6,n_estimators=n_estimators_i, n_jobs = -1, max_depth = max_depth_i, bootstrap=True, max_samples = max_samples_i, random_state = random_state_i)                    
                     clf.three_seed_validate()
                     # predictions.append(clf.clf.predict(clf.x_val_test))
                     # 0.4, 512, 50
