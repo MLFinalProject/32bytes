@@ -17,7 +17,8 @@ for key in attribute_threshold_dict:
     hotel_is_cancel.add_feature(new_attribute_df)
 
 modified_key = "arrival_date_week_number"
-new_attribute_df = absolute_peak_transform(hotel_is_cancel.get_feature([modified_key]), 34)
+peak = 34
+new_attribute_df = absolute_peak_transform(hotel_is_cancel.get_feature([modified_key]), peak)
 hotel_is_cancel.remove_feature([modified_key])
 hotel_is_cancel.add_feature(new_attribute_df)
 
