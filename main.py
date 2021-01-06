@@ -16,6 +16,13 @@ for key in attribute_threshold_dict:
     hotel_is_cancel.remove_feature([key])
     hotel_is_cancel.add_feature(new_attribute_df)
 
+modified_key = "arrival_date_week_number"
+peak = 34
+new_attribute_df = absolute_peak_transform(hotel_is_cancel.get_feature([modified_key]), peak)
+hotel_is_cancel.remove_feature([modified_key])
+hotel_is_cancel.add_feature(new_attribute_df)
+
+
 
 room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type', 'assigned_room_type']))
 net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))

@@ -16,3 +16,16 @@ def transfer_not_enough_data_to_mean(data_frame, threshold):
 	column_name = data_frame.columns[0]
 	data_frame[column_name].values[data_frame[column_name] > threshold] = attribute_mean + 100
 	return data_frame
+
+def absolute_peak_transform(data_frame, peak):
+	column_name = data_frame.columns[0]
+	# attribute = data_frame[column_name]
+	# print(data_frame[column_name])
+	df = abs(data_frame.loc[:, column_name] - peak)
+	# print(df)
+	return df
+	# exit()
+	# # data_frame.loc[:, [column_name]] += 1
+	# print(data_frame[column_name])
+	# exit()
+	# return data_frame
