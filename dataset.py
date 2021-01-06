@@ -37,8 +37,9 @@ class Dataset(object):
         self.train_test_df['arrival_date_day_of_month'] = self.train_test_df['arrival_date_day_of_month'].apply(str)
         
     def smooth_target_encoding(self, column_name, target, weight = 300, replace = True):
+        train_df = self.train_test_df[self.train_test_df['dataset'].eq(self.data_label["train"])].drop(['dataset'], axis = 1)
         global_mean = self.target_df[target].mean()
-        temp_df = pd.concat([self.train_df[column_name], self.target_df[target]], axis=1)
+        temp_df = pd.concat([train_df[column_name], self.target_df[target]], axis=1)
         agg = temp_df.groupby(column_name)[target].agg(['count', 'mean'])
         categorial_count = agg['count']
         categorial_mean = agg['mean']
