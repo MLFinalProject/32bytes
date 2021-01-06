@@ -31,61 +31,61 @@ class Classification:
         print('\n---is_canceled Predicting---')
         self.start_time = time.time()
 
-class TheDecisionTree(Classification):
-    """docstring for DecisionTree"""
-    def __init__(self, x_train, y_train, x_test):
-        super().__init__(x_train, y_train, x_test)
-        self.clf = DecisionTreeClassifier(random_state = 0)
+# class TheDecisionTree(Classification):
+#     """docstring for DecisionTree"""
+#     def __init__(self, x_train, y_train, x_test):
+#         super().__init__(x_train, y_train, x_test)
+#         self.clf = DecisionTreeClassifier(random_state = 0)
 
-    def train(self):
-        super().train()
-        self.clf = self.clf.fit(self.x_train,self.y_train)
-        train_acc = self.clf.score(self.x_train, self.y_train)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
+#     def train(self):
+#         super().train()
+#         self.clf = self.clf.fit(self.x_train,self.y_train)
+#         train_acc = self.clf.score(self.x_train, self.y_train)
+#         print(f'Training Accuracy of our model is: {train_acc:.3f}')
+#         print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
 
-    def v_fold_validate(self):
-        super().v_fold_validate()
-        self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
-        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
-        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'Test Accuracy of our model is: {test_acc:.3f}')
-        print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
+#     def v_fold_validate(self):
+#         super().v_fold_validate()
+#         self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+#         train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+#         test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+#         print(f'Training Accuracy of our model is: {train_acc:.3f}')
+#         print(f'Test Accuracy of our model is: {test_acc:.3f}')
+#         print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
 
-    def predict(self):
-        super().predict()
-        predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
-        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
-        return predicts
+#     def predict(self):
+#         super().predict()
+#         predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
+#         print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+#         return predicts
 
-class TheLogisticRegression(Classification):
-    """docstring for DecisionTree"""
-    def __init__(self, x_train, y_train, x_test):
-        super().__init__(x_train, y_train, x_test)
-        self.reg = LogisticRegression(max_iter=800)
+# class TheLogisticRegression(Classification):
+#     """docstring for DecisionTree"""
+#     def __init__(self, x_train, y_train, x_test):
+#         super().__init__(x_train, y_train, x_test)
+#         self.reg = LogisticRegression(max_iter=800)
 
-    def train(self):
-        super().train()
-        self.reg = self.reg.fit(self.x_train,self.y_train)
-        train_acc = self.reg.score(self.x_train,self.y_train)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
+#     def train(self):
+#         super().train()
+#         self.reg = self.reg.fit(self.x_train,self.y_train)
+#         train_acc = self.reg.score(self.x_train,self.y_train)
+#         print(f'Training Accuracy of our model is: {train_acc:.3f}')
+#         print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
 
-    def predict(self):
-        super().predict()
-        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['is_canceled'])
-        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
-        return predicts
+#     def predict(self):
+#         super().predict()
+#         predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['is_canceled'])
+#         print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+#         return predicts
 
-    def v_fold_validate(self):
-        super().v_fold_validate()
-        self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
-        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
-        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
-        print(f'Training Accuracy of our model is: {train_acc}')
-        print(f'Test Accuracy of our model is: {test_acc}')
-        print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
+#     def v_fold_validate(self):
+#         super().v_fold_validate()
+#         self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+#         train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+#         test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+#         print(f'Training Accuracy of our model is: {train_acc}')
+#         print(f'Test Accuracy of our model is: {test_acc}')
+#         print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
 
 class TheRandomForest(Classification):
     """docstring for TheRandomForest"""
@@ -133,66 +133,76 @@ class TheRandomForest(Classification):
         print(f'experiment done in {time.time()-self.start_time:.3f}(s).')
         print('--------------------\n')
 
-
-
-
-
-class TheGradientBoost(Classification):
-    """docstring for TheRandomForest"""
-    def __init__(self, x_train, y_train, x_test):
-        super().__init__(x_train, y_train, x_test)
-        self.clf = GradientBoostingClassifier(random_state = 0)
-
-    def train(self):
-        super().train()
+    def ensemble_seed(self, seed):
+        self.start_time = time.time()
+        self.clf = RandomForestClassifier(min_impurity_decrease=1e-6, n_estimators=128, random_state = seed, n_jobs = -1)
         self.clf = self.clf.fit(self.x_train,self.y_train)
-        train_acc = self.clf.score(self.x_train, self.y_train)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
-
-
-    def v_fold_validate(self):
-        super().v_fold_validate()
-        self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
-        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
-        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'Test Accuracy of our model is: {test_acc:.3f}')
-        print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
-
-    def predict(self):
-        super().predict()
+        train_acc = self.clf.score(self.x_train,self.y_train)
         predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
-        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+        print(f'Classification Accuracy: {train_acc:.3f}', end = '\t')
+        print(f'done in {time.time()-self.start_time:.3f}(s).')
         return predicts
 
-class TheXGBoost(Classification):
-    """docstring for TheRandomForest"""
-    def __init__(self, x_train, y_train, x_test):
-        super().__init__(x_train, y_train, x_test)
-        self.clf = XGBClassifier(seed = 0, use_label_encoder=False)
 
-    def train(self):
-        super().train()
-        self.clf = self.clf.fit(self.x_train,self.y_train)
-        y_pred = self.clf.predict(self.y_train)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
 
-    def v_fold_validate(self):
-        super().v_fold_validate()
-        self.clf = self.clf.fit(self.x_val_train, self.y_val_train, eval_metric='error')
-        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
-        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'Test Accuracy of our model is: {test_acc:.3f}')
-        print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
 
-    def predict(self):
-        super().predict()
-        predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
-        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
-        return predicts        
+
+# class TheGradientBoost(Classification):
+#     """docstring for TheRandomForest"""
+#     def __init__(self, x_train, y_train, x_test):
+#         super().__init__(x_train, y_train, x_test)
+#         self.clf = GradientBoostingClassifier(random_state = 0)
+
+#     def train(self):
+#         super().train()
+#         self.clf = self.clf.fit(self.x_train,self.y_train)
+#         train_acc = self.clf.score(self.x_train, self.y_train)
+#         print(f'Training Accuracy of our model is: {train_acc:.3f}')
+#         print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
+
+
+#     def v_fold_validate(self):
+#         super().v_fold_validate()
+#         self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+#         train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+#         test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+#         print(f'Training Accuracy of our model is: {train_acc:.3f}')
+#         print(f'Test Accuracy of our model is: {test_acc:.3f}')
+#         print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
+
+#     def predict(self):
+#         super().predict()
+#         predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
+#         print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+#         return predicts
+
+# class TheXGBoost(Classification):
+#     """docstring for TheRandomForest"""
+#     def __init__(self, x_train, y_train, x_test):
+#         super().__init__(x_train, y_train, x_test)
+#         self.clf = XGBClassifier(seed = 0, use_label_encoder=False)
+
+#     def train(self):
+#         super().train()
+#         self.clf = self.clf.fit(self.x_train,self.y_train)
+#         y_pred = self.clf.predict(self.y_train)
+#         print(f'Training Accuracy of our model is: {train_acc:.3f}')
+#         print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
+
+#     def v_fold_validate(self):
+#         super().v_fold_validate()
+#         self.clf = self.clf.fit(self.x_val_train, self.y_val_train, eval_metric='error')
+#         train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+#         test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+#         print(f'Training Accuracy of our model is: {train_acc:.3f}')
+#         print(f'Test Accuracy of our model is: {test_acc:.3f}')
+#         print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
+
+#     def predict(self):
+#         super().predict()
+#         predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
+#         print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+#         return predicts        
 
 if __name__ == '__main__':
     from feature_engineering import *

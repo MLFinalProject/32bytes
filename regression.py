@@ -5,6 +5,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import ExtraTreesRegressor
 import time
 
 class Regression:
@@ -25,89 +26,89 @@ class Regression:
         print('\n---adr Predicting---')
         self.start_time = time.time()
 		
-class TheLinearRegression(Regression):
-	def __init__(self, x_train, y_val_train, x_test):
-		super().__init__(x_train, y_train, x_test)
-		self.reg = LinearRegression()
+# class TheLinearRegression(Regression):
+# 	def __init__(self, x_train, y_val_train, x_test):
+# 		super().__init__(x_train, y_train, x_test)
+# 		self.reg = LinearRegression()
 	
-	def v_fold_validate(self):
-		super().v_fold_validate()
-		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
-		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
-		print('---Cross-Validation Testing---')
-		print(f'Training Accuracy of our model is: {train_acc}')
-		print(f'Cross-Validation Test Accuracy of our model is: {test_acc}')
-		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+# 	def v_fold_validate(self):
+# 		super().v_fold_validate()
+# 		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+# 		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+# 		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+# 		print('---Cross-Validation Testing---')
+# 		print(f'Training Accuracy of our model is: {train_acc}')
+# 		print(f'Cross-Validation Test Accuracy of our model is: {test_acc}')
+# 		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
 	
-	def train(self):
-		super().train()
-		self.reg = self.reg.fit(self.x_train,self.y_train)
-		train_acc = self.reg.score(self.x_train,self.y_train)
-		print(f'Training Accuracy of our model is: {train_acc:.3f}')
-		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+# 	def train(self):
+# 		super().train()
+# 		self.reg = self.reg.fit(self.x_train,self.y_train)
+# 		train_acc = self.reg.score(self.x_train,self.y_train)
+# 		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+# 		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
 		
-	def predict(self):
-		super().predict()
-		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
-		return predicts
+# 	def predict(self):
+# 		super().predict()
+# 		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+# 		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+# 		return predicts
 
-class TheDecisionTreeRegressor(Regression):
-	def __init__(self, x_train, y_train, x_test):
-		super().__init__(x_train, y_train, x_test)
-		self.reg = DecisionTreeRegressor(random_state = 5)
+# class TheDecisionTreeRegressor(Regression):
+# 	def __init__(self, x_train, y_train, x_test):
+# 		super().__init__(x_train, y_train, x_test)
+# 		self.reg = DecisionTreeRegressor(random_state = 5)
 	
-	def v_fold_validate(self):
-		super().v_fold_validate()
-		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
-		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
-		print('---Cross-Validation Testing---')
-		print(f'Training Accuracy of our model is: {train_acc:.3f}')
-		print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
-		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+# 	def v_fold_validate(self):
+# 		super().v_fold_validate()
+# 		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+# 		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+# 		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+# 		print('---Cross-Validation Testing---')
+# 		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+# 		print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
+# 		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
 	
-	def train(self):
-		super().train()
-		self.reg = self.reg.fit(self.x_train,self.y_train)
-		train_acc = self.reg.score(self.x_train,self.y_train)
-		print(f'Training Accuracy of our model is: {train_acc:.3f}')
-		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+# 	def train(self):
+# 		super().train()
+# 		self.reg = self.reg.fit(self.x_train,self.y_train)
+# 		train_acc = self.reg.score(self.x_train,self.y_train)
+# 		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+# 		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
 		
-	def predict(self):
-		super().predict()
-		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
-		return predicts
+# 	def predict(self):
+# 		super().predict()
+# 		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+# 		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+# 		return predicts
 
-class TheGradientBoostingRegressor(Regression):
-	def __init__(self, x_train, y_train, x_test):
-		super().__init__(x_train, y_train, x_test)
-		self.reg = GradientBoostingRegressor(random_state = 0, n_estimators = 100, loss='lad', max_depth = 4)
+# class TheGradientBoostingRegressor(Regression):
+# 	def __init__(self, x_train, y_train, x_test):
+# 		super().__init__(x_train, y_train, x_test)
+# 		self.reg = GradientBoostingRegressor(random_state = 0, n_estimators = 100, loss='lad', max_depth = 4)
 	
-	def v_fold_validate(self):
-		super().v_fold_validate()
-		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
-		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
-		print('---Cross-Validation Testing---')
-		print(f'Training Accuracy of our model is: {train_acc:.3f}')
-		print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
-		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+# 	def v_fold_validate(self):
+# 		super().v_fold_validate()
+# 		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+# 		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+# 		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+# 		print('---Cross-Validation Testing---')
+# 		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+# 		print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
+# 		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
 	
-	def train(self):
-		super().train()
-		self.reg = self.reg.fit(self.x_train,self.y_train)
-		train_acc = self.reg.score(self.x_train,self.y_train)
-		print(f'Training Accuracy of our model is: {train_acc:.3f}')
-		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+# 	def train(self):
+# 		super().train()
+# 		self.reg = self.reg.fit(self.x_train,self.y_train)
+# 		train_acc = self.reg.score(self.x_train,self.y_train)
+# 		print(f'Training Accuracy of our model is: {train_acc:.3f}')
+# 		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
 		
-	def predict(self):
-		super().predict()
-		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
-		return predicts
+# 	def predict(self):
+# 		super().predict()
+# 		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+# 		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+# 		return predicts
 
 class TheRandomForestRegressor(Regression):
     def __init__(self, x_train, y_train, x_test):
@@ -127,6 +128,16 @@ class TheRandomForestRegressor(Regression):
     def ensemble(self):
         self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
             self.x_train, self.y_train, test_size=0.2, random_state=1126)
+
+    def ensemble_seed(self, seed):
+        self.start_time = time.time()
+        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=0.4, min_samples_leaf = 2, n_estimators=128, random_state = seed, bootstrap=True, n_jobs = -1)
+        self.reg = self.reg.fit(self.x_train,self.y_train)
+        train_acc = self.reg.score(self.x_train,self.y_train)
+        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+        print(f'Regression Accuracy: {train_acc:.3f}', end = '\t')
+        print(f'done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
     
     def three_seed_validate(self):
         self.start_time = time.time()
@@ -158,10 +169,22 @@ if __name__ == '__main__':
     from feature_engineering import *
     from dataset import Dataset
     hotel_adr = Dataset()
+    # attribute_threshold_dict = {"adults":3, "babies":2, "children":3, "required_car_parking_spaces":2, "stays_in_week_nights":20, "stays_in_weekend_nights":10}
+    # for key in attribute_threshold_dict:
+    #     new_attribute_df = transfer_not_enough_data_to_mean(hotel_adr.get_feature([key]), attribute_threshold_dict[key])
+    #     hotel_adr.remove_feature([key])
+    #     hotel_adr.add_feature(new_attribute_df)
+    modified_key = "arrival_date_week_number"
+    peak = 34
+    new_attribute_df = absolute_peak_transform(hotel_adr.get_feature([modified_key]), peak)
+    # hotel_adr.remove_feature([modified_key])
+    hotel_adr.add_feature(new_attribute_df)
     x_train_adr = hotel_adr.get_train_dataset()
     x_test_adr = hotel_adr.get_test_dataset()
     y_train_adr = hotel_adr.get_train_adr()
     reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr)
+    reg.three_seed_validate()
+    exit()
 
     predictions = []
     ensemble_count = 0
