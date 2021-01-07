@@ -30,4 +30,11 @@ def absolute_peak_transform(data_frame, peak):
 	# exit()
 	# return data_frame
 
-def 
+def adults_only(data_frame):
+	data_frame = data_frame.assign(adults_only=0)
+	column_name = data_frame.columns
+	data_frame.loc[ (data_frame['adults'] > 0) & (data_frame['children'] == 0) & (data_frame['babies'] == 0), 'adults_only'] = 1
+
+	# print(column_name[1])
+	print(data_frame)
+	print(data_frame['adults_only'])

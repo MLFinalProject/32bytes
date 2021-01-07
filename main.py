@@ -9,6 +9,7 @@ from predict import predict
 
 hotel_is_cancel = Dataset()
 
+
 # removing outliers
 attribute_threshold_dict = {"adults":3, "babies":2, "children":3, "required_car_parking_spaces":2, "stays_in_week_nights":20, "stays_in_weekend_nights":10}
 for key in attribute_threshold_dict:
@@ -21,6 +22,10 @@ peak = 34
 new_attribute_df = absolute_peak_transform(hotel_is_cancel.get_feature([modified_key]), peak)
 hotel_is_cancel.remove_feature([modified_key])
 hotel_is_cancel.add_feature(new_attribute_df)
+
+modified_list = ["adults", "children", "babies"]
+adults_only(hotel_is_cancel.get_feature(modified_list))
+exit()
 
 
 
