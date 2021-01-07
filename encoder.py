@@ -48,12 +48,8 @@ def one_hot_encode(input_df_x,input_df_y):
 	
 def polynomial_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'
-	result = pd.DataFrame()
-	for x in input_df_x.columns:
-		enc = category_encoders.PolynomialEncoder(cols = x)
-		enc = enc.fit_transform(input_df_x[x],input_df_y)
-		result[x] = enc.values.tolist()
-	return result
+	enc = category_encoders.PolynomialEncoder(cols = input_df_x.columns)
+	return enc.fit_transform(input_df_x,input_df_y)
 
 def target_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'

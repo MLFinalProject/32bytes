@@ -9,6 +9,7 @@ from encoder import *
 
 
 encode_target = ['hotel','agent','arrival_date_day_of_month','arrival_date_year','assigned_room_type','company','country','customer_type','deposit_type','distribution_channel','market_segment','meal','reserved_room_type']
+#encode_target = ['country']
 
 hotel_is_cancel = Dataset()
 
@@ -30,9 +31,10 @@ room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type
 net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
 hotel_is_cancel.add_feature(room_feature)
 hotel_is_cancel.add_feature(net_canceled_feature)
+#hotel_is_cancel.remove_feature(['country','arrival_date_year'])
 
 data_not_encoded = pd.concat([hotel_is_cancel.get_feature(encode_target),hotel_is_cancel.get_train_is_canceled()],axis = 1)
-data_encoded = target_encode(data_not_encoded[encode_target],data_not_encoded['is_canceled'])
+data_encoded = count_encode(data_not_encoded[encode_target],data_not_encoded['is_canceled'])
 data_encoded_col_name = data_encoded.columns
 for col in data_encoded_col_name:
 	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
@@ -50,9 +52,10 @@ is_canceled_df = clf.predict()
 
 
 hotel_adr = Dataset()
+#hotel_adr.remove_feature(['country','arrival_date_year'])
 
 data_not_encoded = pd.concat([hotel_adr.get_feature(encode_target),hotel_adr.get_train_adr()],axis = 1)
-data_encoded = target_encode(data_not_encoded[encode_target],data_not_encoded['adr'])
+data_encoded = count_encode(data_not_encoded[encode_target],data_not_encoded['adr'])
 for col in data_encoded_col_name:
 	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
 hotel_adr.add_feature(data_encoded)
