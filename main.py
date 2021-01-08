@@ -55,6 +55,9 @@ for only_attribute in remove_only_list:
 # hotel_is_cancel.remove_feature(encode_target)
 
 # ---Remove only---
+
+hotel_is_cancel.remove_feature(['arrival_date_year'])
+
 x_train_is_canceled = hotel_is_cancel.get_train_dataset()
 x_test_is_canceled = hotel_is_cancel.get_test_dataset()
 y_train_is_canceled = hotel_is_cancel.get_train_is_canceled()
@@ -73,7 +76,7 @@ for only_attribute in remove_only_list:
 # ------
 
 clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled)
-clf.v_fold_validate()
+# clf.v_fold_validate()
 
 clf.train()
 is_canceled_df = clf.predict()
@@ -102,7 +105,7 @@ for only_attribute in remove_only_list:
     hotel_adr.add_feature(new_attribute_column)
 # exit()
 # -------------------------
-
+hotel_adr.remove_feature(['arrival_date_year'])
 
 x_train_adr = hotel_adr.get_train_dataset()
 x_test_adr = hotel_adr.get_test_dataset()
@@ -115,7 +118,7 @@ for only_attribute in remove_only_list:
 
 
 reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr)
-reg.v_fold_validate()
+# reg.v_fold_validate()
 
 reg.train()
 adr_df = reg.predict()

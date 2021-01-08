@@ -123,7 +123,7 @@ class TheRandomForest(Classification):
         print(f'done in {time.time()-self.start_time:.3f}(s).')
         return predicts
 
-# class TheDecisionTree(Classification):
+# class TheDecisionTree(Classificatio n):
 #     """docstring for DecisionTree"""
 #     def __init__(self, x_train, y_train, x_test):
 #         super().__init__(x_train, y_train, x_test)
