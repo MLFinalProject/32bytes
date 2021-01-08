@@ -36,3 +36,45 @@ def adults_only(data_frame):
 	# print(column_name[1])
 	print(data_frame)
 	print(data_frame['adults_only'])
+
+def country_remove_only(data_frame, data_frame_train, data_frame_test):
+	train_country = data_frame_train.to_numpy().squeeze()
+	test_country = data_frame_test.to_numpy().squeeze()
+	train_only_country = list(set(train_country) - set(test_country))
+	test_only_country = list(set(test_country) - set(train_country))
+	only_country = train_only_country + test_only_country
+	print(train_only_country)
+	print(test_only_country)
+	print(only_country)
+	# print(test_only_country)
+	# print(data_frame)
+	# # exit()
+	# print(type(data_frame['country']))
+	data_frame['country'].values[data_frame['country'].isin(only_country)] = 'RMV'
+	# data_frame['country'].values[data_frame['country'].isnull()] = 'RMV'
+	# data_frame.loc[data_frame['country'].isin(train_only_country), 'country'] = 'RMV'
+	# print(data_frame['country'].value_counts())
+	# Totally there are 103 'RMV' in train
+	# print(data_frame['country'].value_counts().loc['RMV'])
+	# print(type(data_frame['country'].value_counts()))
+	return data_frame
+
+
+def remove_only(data_frame, data_frame_train, data_frame_test):
+	attribute = list(data_frame.columns.values)[0]
+	train_attribute = data_frame_train.to_numpy().squeeze()
+	test_attribute = data_frame_test.to_numpy().squeeze()
+	train_only_attribute = list(set(train_attribute) - set(test_attribute))
+	test_only_attribute = list(set(test_attribute) - set(train_attribute))
+	only_attribute = train_only_attribute + test_only_attribute
+	# print(train_only_attribute)
+	# print(test_only_attribute)
+	# print(only_attribute)
+	# print(test_only_attribute)
+	# print(data_frame)
+	# # exit()
+	# print(type(data_frame['attribute']))
+	data_frame[attribute].values[data_frame[attribute].isin(only_attribute)] = 'RMV'
+
+	return data_frame
+	
