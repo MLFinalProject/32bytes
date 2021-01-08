@@ -15,16 +15,110 @@ class Regression:
         self.x_test = x_test
 
     def v_fold_validate(self):
+        print('\n---adr validating---')
         self.start_time = time.time()
         self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(self.x_train, self.y_train, test_size = 0.2, random_state = 390625)
 
+    def monthly_validate(self, seed):
+        print(f'---adr validating each month---')
+        self.month_str = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',]
+        self.start_time = time.time()
+        self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+            self.x_train, self.y_train, test_size=0.2, random_state=seed)
+      
+        self.y_val_test = pd.DataFrame(self.y_val_test.tolist(),columns=['y'])
+        self.x_val_test = pd.concat([self.x_val_test.reset_index(drop=True), self.y_val_test],axis=1)
+
+        
+        self.x_month_test = {}
+        self.y_month_test = {}
+        for m in self.month_str:
+            column_label = f'arrival_date_month_{m}'
+            x_val_test = self.x_val_test[self.x_val_test[column_label].eq(1)]
+            self.x_month_test[m] = x_val_test.drop(['y'], axis = 1)
+            self.y_month_test[m] = x_val_test['y'].to_numpy()
+        self.x_val_test.drop(['y'], axis = 1, inplace = True)
+
     def train(self):
-        print('\n---adr Training---')
+        print('\n---adr training---')
         self.start_time = time.time()
 
     def predict(self):
-        print('\n---adr Predicting---')
+        print('\n---adr predicting---')
         self.start_time = time.time()
+
+
+class TheRandomForestRegressor(Regression):
+    def __init__(self, x_train, y_train, x_test):
+        super().__init__(x_train, y_train, x_test)
+        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=0.4, min_samples_leaf = 2, n_estimators=128, random_state = 6174, bootstrap=True, n_jobs = -1)
+
+    def v_fold_validate(self):
+        super().v_fold_validate()
+        self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+        train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+        test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'Test Accuracy of our model is: {test_acc:.3f}')
+        print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+
+    def monthly_validate(self, seed = None):
+        super().monthly_validate(seed)
+        self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+        train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+        test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+        print(f'Overall||\ntrain_acc: {train_acc:.3f}\ntest_acc: {test_acc:.3f}')
+        print('--------------------\nMonthly||')
+        month_acc = []
+        for m in self.month_str:
+            test_acc = self.reg.score(self.x_month_test[m], self.y_month_test[m])
+            month_acc.append(test_acc)
+            print(f'test_acc: {test_acc:.3f} ({m})')
+        print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
+        print(f'mean: {np.mean(month_acc[3:8]):.3f}, std: {np.std(month_acc[3:8]):.3f}, max: {np.max(month_acc[3:8]):.3f}, min: {np.min(month_acc[3:8]):.3f} (April-August)')
+        print(f'done in {time.time()-self.start_time:.3f}(s).\n')
+
+    def ensemble(self):
+        self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+            self.x_train, self.y_train, test_size=0.2, random_state=1126)
+
+    def ensemble_seed(self, seed):
+        self.start_time = time.time()
+        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=0.4, min_samples_leaf = 2, n_estimators=128, random_state = seed, bootstrap=True, n_jobs = -1)
+        self.reg = self.reg.fit(self.x_train,self.y_train)
+        train_acc = self.reg.score(self.x_train,self.y_train)
+        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+        print(f'Regression Accuracy: {train_acc:.3f}', end = '\t')
+        print(f'done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
+    
+    def three_seed_validate(self):
+        self.start_time = time.time()
+        seed = 1126
+        for seed in [123, 1126, 390625]:
+            self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+                self.x_train, self.y_train, test_size=0.2, random_state=seed)
+            self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+            train_acc = self.reg.score(self.x_val_train, self.y_val_train)
+            test_acc = self.reg.score(self.x_val_test, self.y_val_test)
+            print(f'seed {seed}\t train_acc:{train_acc:.3f}, test_acc:{test_acc:.3f}')
+        print(f'experiment done in {time.time()-self.start_time:.3f}(s).')
+        print('--------------------\n')
+
+    def train(self):
+        super().train()
+        self.reg = self.reg.fit(self.x_train,self.y_train)
+        train_acc = self.reg.score(self.x_train,self.y_train)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+        
+    def predict(self):
+        super().predict()
+        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+        print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
+
+
 		
 # class TheLinearRegression(Regression):
 # 	def __init__(self, x_train, y_val_train, x_test):
@@ -110,60 +204,7 @@ class Regression:
 # 		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
 # 		return predicts
 
-class TheRandomForestRegressor(Regression):
-    def __init__(self, x_train, y_train, x_test):
-        super().__init__(x_train, y_train, x_test)
-        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=0.4, min_samples_leaf = 2, n_estimators=128, random_state = 6174, bootstrap=True, n_jobs = -1)
 
-    def v_fold_validate(self):
-        super().v_fold_validate()
-        self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-        train_acc = self.reg.score(self.x_val_train, self.y_val_train)
-        test_acc = self.reg.score(self.x_val_test, self.y_val_test)
-        print('---Cross-Validation Testing---')
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'Cross-Validation Test Accuracy of our model is: {test_acc:.3f}')
-        print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
-
-    def ensemble(self):
-        self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
-            self.x_train, self.y_train, test_size=0.2, random_state=1126)
-
-    def ensemble_seed(self, seed):
-        self.start_time = time.time()
-        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=0.4, min_samples_leaf = 2, n_estimators=128, random_state = seed, bootstrap=True, n_jobs = -1)
-        self.reg = self.reg.fit(self.x_train,self.y_train)
-        train_acc = self.reg.score(self.x_train,self.y_train)
-        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-        print(f'Regression Accuracy: {train_acc:.3f}', end = '\t')
-        print(f'done in {time.time()-self.start_time:.3f}(s).')
-        return predicts
-    
-    def three_seed_validate(self):
-        self.start_time = time.time()
-        seed = 1126
-        for seed in [123, 1126, 390625]:
-            self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
-                self.x_train, self.y_train, test_size=0.2, random_state=seed)
-            self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-            train_acc = self.reg.score(self.x_val_train, self.y_val_train)
-            test_acc = self.reg.score(self.x_val_test, self.y_val_test)
-            print(f'seed {seed}\t train_acc:{train_acc:.3f}, test_acc:{test_acc:.3f}')
-        print(f'experiment done in {time.time()-self.start_time:.3f}(s).')
-        print('--------------------\n')
-
-    def train(self):
-        super().train()
-        self.reg = self.reg.fit(self.x_train,self.y_train)
-        train_acc = self.reg.score(self.x_train,self.y_train)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
-    	
-    def predict(self):
-        super().predict()
-        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-        print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
-        return predicts
 
 if __name__ == '__main__':
     from feature_engineering import *
@@ -174,29 +215,35 @@ if __name__ == '__main__':
     #     new_attribute_df = transfer_not_enough_data_to_mean(hotel_adr.get_feature([key]), attribute_threshold_dict[key])
     #     hotel_adr.remove_feature([key])
     #     hotel_adr.add_feature(new_attribute_df)
-    modified_key = "arrival_date_week_number"
-    peak = 34
-    new_attribute_df = absolute_peak_transform(hotel_adr.get_feature([modified_key]), peak)
+    # modified_key = "arrival_date_week_number"
+    # peak = 34
+    # new_attribute_df = absolute_peak_transform(hotel_adr.get_feature([modified_key]), peak)
     # hotel_adr.remove_feature([modified_key])
-    hotel_adr.add_feature(new_attribute_df)
+    # hotel_adr.add_feature(new_attribute_df)
+    hotel_adr.train_test_df['arrival_date_week_number'] = hotel_adr.train_test_df['arrival_date_week_number'].apply(str)
+    # hotel_adr.remove_feature(['company'])
     x_train_adr = hotel_adr.get_train_dataset()
     x_test_adr = hotel_adr.get_test_dataset()
     y_train_adr = hotel_adr.get_train_adr()
     reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr)
-    reg.three_seed_validate()
-    exit()
+    for i in [.2, .25, .3]:
+        print(f'doing max_features = {i}:')
+        reg.reg = RandomForestRegressor(max_features=i, min_samples_leaf = 1, n_estimators=512, max_depth = None, random_state = 1126, bootstrap=True, n_jobs = -1)            
+        reg.monthly_validate(1126)
+    # reg.three_seed_validate()
+    # exit()
 
-    predictions = []
-    ensemble_count = 0
-    # reg.ensemble()
-    for min_weight_fraction_leaf_i in [0.0]:
-        for min_impurity_decrease_i in [0.001]:
-            for max_features_i in [0.4]:
-                for min_samples_leaf_i in [2]:
-                    ensemble_count += 1
-                    print(f'No.{ensemble_count} experiment min_weight_fraction_leaf = {min_weight_fraction_leaf_i}, min_impurity_decrease = {min_impurity_decrease_i}, max_features = {max_features_i}, min_samples_leaf = {min_samples_leaf_i}.')
-                    reg.reg = RandomForestRegressor(min_weight_fraction_leaf=min_weight_fraction_leaf_i, min_impurity_decrease=min_impurity_decrease_i, max_features=max_features_i, min_samples_leaf = min_samples_leaf_i, n_estimators=128, max_depth = None, max_samples = None, random_state = 1126, bootstrap=True, n_jobs = -1)                    
-                    reg.three_seed_validate()
+    # predictions = []
+    # ensemble_count = 0
+    # # reg.ensemble()
+    # for min_weight_fraction_leaf_i in [0.0]:
+    #     for min_impurity_decrease_i in [0.001]:
+    #         for max_features_i in [0.4]:
+    #             for min_samples_leaf_i in [2]:
+    #                 ensemble_count += 1
+    #                 print(f'No.{ensemble_count} experiment min_weight_fraction_leaf = {min_weight_fraction_leaf_i}, min_impurity_decrease = {min_impurity_decrease_i}, max_features = {max_features_i}, min_samples_leaf = {min_samples_leaf_i}.')
+    #                 reg.reg = RandomForestRegressor(min_weight_fraction_leaf=min_weight_fraction_leaf_i, min_impurity_decrease=min_impurity_decrease_i, max_features=max_features_i, min_samples_leaf = min_samples_leaf_i, n_estimators=128, max_depth = None, max_samples = None, random_state = 1126, bootstrap=True, n_jobs = -1)                    
+    #                 reg.three_seed_validate()
                     # predictions.append(reg.reg.predict(reg.x_val_test))
                     # 0.4, 512, 50
     # predictions = np.stack(predictions)
