@@ -17,19 +17,111 @@ class Classification:
         
 
     def v_fold_validate(self):
-        print('\n---is_canceled Validating---')
+        print('\n---is_canceled validating---')
         self.start_time = time.time()
         self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
-            self.x_train, self.y_train, test_size=0.2, random_state=0)
+            self.x_train, self.y_train, test_size=0.2)
 
+    def monthly_validate(self, seed):
+        print(f'---is_canceled validating each month---')
+        self.month_str = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',]
+        self.start_time = time.time()
+        self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+            self.x_train, self.y_train, test_size=0.3, random_state=seed)
+      
+        self.y_val_test = pd.DataFrame(self.y_val_test.tolist(),columns=['y'])
+        self.x_val_test = pd.concat([self.x_val_test.reset_index(drop=True), self.y_val_test],axis=1)
+
+        
+        self.x_month_test = {}
+        self.y_month_test = {}
+        for m in self.month_str:
+            column_label = f'arrival_date_month_{m}'
+            x_val_test = self.x_val_test[self.x_val_test[column_label].eq(1)]
+            self.x_month_test[m] = x_val_test.drop(['y'], axis = 1)
+            self.y_month_test[m] = x_val_test['y'].to_numpy()
+        self.x_val_test.drop(['y'], axis = 1, inplace = True)
 
     def train(self):
-        print('\n---is_canceled Training---')
+        print('\n---is_canceled training---')
         self.start_time = time.time()
 
     def predict(self):
-        print('\n---is_canceled Predicting---')
+        print('\n---is_canceled predicting---')
         self.start_time = time.time()
+
+
+class TheRandomForest(Classification):
+    """docstring for TheRandomForest"""
+    def __init__(self, x_train, y_train, x_test):
+        super().__init__(x_train, y_train, x_test)
+        self.clf = RandomForestClassifier(min_impurity_decrease=1e-6, n_estimators=128, random_state = 6174, n_jobs = -1)
+
+    def train(self):
+        super().train()
+        self.clf = self.clf.fit(self.x_train,self.y_train)
+        train_acc = self.clf.score(self.x_train, self.y_train)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
+
+
+    def v_fold_validate(self):
+        super().v_fold_validate()
+        self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+        print(f'Training Accuracy of our model is: {train_acc:.3f}')
+        print(f'Test Accuracy of our model is: {test_acc:.3f}')
+        print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
+
+    def monthly_validate(self, seed = None):
+        super().monthly_validate(seed)
+        self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+        print(f'Overall||\ntrain_acc: {train_acc:.3f}\ntest_acc: {test_acc:.3f}')
+        print('--------------------\nMonthly||')
+        month_acc = []
+        for m in self.month_str:
+            test_acc = self.clf.score(self.x_month_test[m], self.y_month_test[m])
+            month_acc.append(test_acc)
+            print(f'test_acc: {test_acc:.3f} ({m})')
+        print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
+        print(f'done in {time.time()-self.start_time:.3f}(s).\n')
+
+
+    def predict(self):
+        super().predict()
+        predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
+        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
+
+    def ensemble(self):
+        self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+            self.x_train, self.y_train, test_size=0.2, random_state=1126)
+    
+    def three_seed_validate(self):
+        self.start_time = time.time()
+        seed = 1126
+        for seed in [123, 1126, 390625]:
+            self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
+                self.x_train, self.y_train, test_size=0.2, random_state=seed)
+            self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
+            train_acc = self.clf.score(self.x_val_train, self.y_val_train)
+            test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+            print(f'seed {seed}\t train_acc:{train_acc:.3f}, test_acc:{test_acc:.3f}')
+        print(f'experiment done in {time.time()-self.start_time:.3f}(s).')
+        print('--------------------\n')
+
+    def ensemble_seed(self, seed):
+        self.start_time = time.time()
+        self.clf = RandomForestClassifier(min_impurity_decrease=1e-6, n_estimators=128, random_state = seed, n_jobs = -1)
+        self.clf = self.clf.fit(self.x_train,self.y_train)
+        train_acc = self.clf.score(self.x_train,self.y_train)
+        predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
+        print(f'Classification Accuracy: {train_acc:.3f}', end = '\t')
+        print(f'done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
 
 # class TheDecisionTree(Classification):
 #     """docstring for DecisionTree"""
@@ -86,65 +178,6 @@ class Classification:
 #         print(f'Training Accuracy of our model is: {train_acc}')
 #         print(f'Test Accuracy of our model is: {test_acc}')
 #         print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
-
-class TheRandomForest(Classification):
-    """docstring for TheRandomForest"""
-    def __init__(self, x_train, y_train, x_test):
-        super().__init__(x_train, y_train, x_test)
-        self.clf = RandomForestClassifier(min_impurity_decrease=1e-6, n_estimators=128, random_state = 6174, n_jobs = -1)
-
-    def train(self):
-        super().train()
-        self.clf = self.clf.fit(self.x_train,self.y_train)
-        train_acc = self.clf.score(self.x_train, self.y_train)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'is_canceled training done in {time.time()-self.start_time:.3f}(s).')
-
-
-    def v_fold_validate(self):
-        super().v_fold_validate()
-        self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
-        train_acc = self.clf.score(self.x_val_train, self.y_val_train)
-        test_acc = self.clf.score(self.x_val_test, self.y_val_test)
-        print(f'Training Accuracy of our model is: {train_acc:.3f}')
-        print(f'Test Accuracy of our model is: {test_acc:.3f}')
-        print(f'is_canceled validation done in {time.time()-self.start_time:.3f}(s).')
-
-    def predict(self):
-        super().predict()
-        predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
-        print(f'is_canceled prediction done in {time.time()-self.start_time:.3f}(s).')
-        return predicts
-
-    def ensemble(self):
-        self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
-            self.x_train, self.y_train, test_size=0.2, random_state=1126)
-    
-    def three_seed_validate(self):
-        self.start_time = time.time()
-        seed = 1126
-        for seed in [123, 1126, 390625]:
-            self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(
-                self.x_train, self.y_train, test_size=0.2, random_state=seed)
-            self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
-            train_acc = self.clf.score(self.x_val_train, self.y_val_train)
-            test_acc = self.clf.score(self.x_val_test, self.y_val_test)
-            print(f'seed {seed}\t train_acc:{train_acc:.3f}, test_acc:{test_acc:.3f}')
-        print(f'experiment done in {time.time()-self.start_time:.3f}(s).')
-        print('--------------------\n')
-
-    def ensemble_seed(self, seed):
-        self.start_time = time.time()
-        self.clf = RandomForestClassifier(min_impurity_decrease=1e-6, n_estimators=128, random_state = seed, n_jobs = -1)
-        self.clf = self.clf.fit(self.x_train,self.y_train)
-        train_acc = self.clf.score(self.x_train,self.y_train)
-        predicts = pd.DataFrame(self.clf.predict(self.x_test), columns = ['is_canceled'])
-        print(f'Classification Accuracy: {train_acc:.3f}', end = '\t')
-        print(f'done in {time.time()-self.start_time:.3f}(s).')
-        return predicts
-
-
-
 
 
 # class TheGradientBoost(Classification):
@@ -224,18 +257,19 @@ if __name__ == '__main__':
     x_test_is_canceled = hotel_is_cancel.get_test_dataset()
     y_train_is_canceled = hotel_is_cancel.get_train_is_canceled()
     clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled)
+    clf.monthly_validate()
 
-    predictions = []
-    ensemble_count = 0
-    clf.ensemble()
-    for max_samples_i in [None]:
-        for n_estimators_i in [128]:
-            for max_depth_i in [None]:
-                for random_state_i in [6174]:
-                    ensemble_count += 1
-                    print(f'No.{ensemble_count} experiment n_estimators = {n_estimators_i}, max_depth = {max_depth_i}, max_samples = {max_samples_i}, seed = {random_state_i}.')
-                    clf.clf = RandomForestClassifier(min_impurity_decrease=1e-6,n_estimators=n_estimators_i, n_jobs = -1, max_depth = max_depth_i, bootstrap=True, max_samples = max_samples_i, random_state = random_state_i)                    
-                    clf.three_seed_validate()
+    # predictions = []
+    # ensemble_count = 0
+    # clf.ensemble()
+    # for max_samples_i in [None]:
+    #     for n_estimators_i in [128]:
+    #         for max_depth_i in [None]:
+    #             for random_state_i in [6174]:
+    #                 ensemble_count += 1
+    #                 print(f'No.{ensemble_count} experiment n_estimators = {n_estimators_i}, max_depth = {max_depth_i}, max_samples = {max_samples_i}, seed = {random_state_i}.')
+    #                 clf.clf = RandomForestClassifier(min_impurity_decrease=1e-6,n_estimators=n_estimators_i, n_jobs = -1, max_depth = max_depth_i, bootstrap=True, max_samples = max_samples_i, random_state = random_state_i)                    
+    #                 clf.three_seed_validate()
                     # predictions.append(clf.clf.predict(clf.x_val_test))
                     # 0.4, 512, 50
     # predictions = np.stack(predictions)
