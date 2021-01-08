@@ -53,14 +53,14 @@ data_encoded = target_encode(data_not_encoded[target_encode_item],data_not_encod
 for col in data_encoded.columns:
 	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
 hotel_is_cancel.add_feature(data_encoded)
-hotel_is_cancel.remove_feature(target_encode_item)
+#hotel_is_cancel.remove_feature(target_encode_item)
 
 data_not_encoded = pd.concat([hotel_is_cancel.get_feature(count_encode_item),hotel_is_cancel.get_train_is_canceled()],axis = 1)
 data_encoded = target_encode(data_not_encoded[count_encode_item],data_not_encoded['is_canceled'])
 for col in data_encoded.columns:
 	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
 hotel_is_cancel.add_feature(data_encoded)
-hotel_is_cancel.remove_feature(count_encode_item)
+#hotel_is_cancel.remove_feature(count_encode_item)
 
 # ---Remove only---
 
