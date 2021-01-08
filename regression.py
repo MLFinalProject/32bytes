@@ -87,7 +87,7 @@ class TheRandomForestRegressor(Regression):
 
     def ensemble_seed(self, seed):
         self.start_time = time.time()
-        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = 6174, n_jobs = -1)
+        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = seed, n_jobs = -1)
         self.reg = self.reg.fit(self.x_train,self.y_train)
         train_err = self.reg.score(self.x_train,self.y_train)
         predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
