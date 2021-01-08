@@ -82,3 +82,10 @@ class DataInsight():
         plt.figure()
         plt.plot(attribute_element, avg_list, 'r.')
         plt.savefig("./data_is_canceled_analysis/img/{}_is_canceled_mean.png".format(attribute))
+
+    def compare_train_test(self, attribute):
+        train_attribute = self.dataset.get_train_column(attribute)
+        test_attribute = self.dataset.get_test_column(attribute)
+        train_attribute_set, test_attribute_set = set(train_attribute), set(test_attribute)
+        train_unique_set = train_attribute_set - test_attribute_set
+        print(train_unique_set)
