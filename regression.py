@@ -31,13 +31,13 @@ class Regression:
 # 		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
 # 		return predicts
 
-# class TheDecisionTreeRegressor(Regression):
-# 	def __init__(self, x_train, y_train, x_test):
-# 		super().__init__(x_train, y_train, x_test)
-# 		self.reg = DecisionTreeRegressor(random_state = 5)
+class TheDecisionTreeRegressor(Regression):
+	def __init__(self, x_train, y_train, x_test):
+		super().__init__(x_train, y_train, x_test)
+		self.reg = DecisionTreeRegressor(random_state = 5)
 	
 	def v_fold_validate(self):
-    		super().v_fold_validate()
+		super().v_fold_validate()
 		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
 		train_acc = self.reg.score(self.x_val_train, self.y_val_train)
 		test_acc = self.reg.score(self.x_val_test, self.y_val_test)
