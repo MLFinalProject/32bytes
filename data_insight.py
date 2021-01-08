@@ -35,9 +35,11 @@ class DataInsight():
             # print(type(attribute_element[0]))
         else:
             attribute_element.sort()
+
         avg_list = []
         num_list = []
         std_list = []
+
         for i in attribute_element:
             avg = np.average(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'adr'].to_numpy())
             std = np.std(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'adr'].to_numpy())
@@ -84,8 +86,72 @@ class DataInsight():
         plt.savefig("./data_is_canceled_analysis/img/{}_is_canceled_mean.png".format(attribute))
 
     def compare_train_test(self, attribute):
-        train_attribute = self.dataset.get_train_column(attribute)
-        test_attribute = self.dataset.get_test_column(attribute)
+        train_attribute = self.dataset.get_train_column(attribute).to_numpy().squeeze()
+        test_attribute = self.dataset.get_test_column(attribute).to_numpy().squeeze()
         train_attribute_set, test_attribute_set = set(train_attribute), set(test_attribute)
+
         train_unique_set = train_attribute_set - test_attribute_set
-        print(train_unique_set)
+        return train_unique_set
+
+    def plot_train_unique(self, attribute):
+        train_unique_set = self.compare_train_test(attribute)
+        train_unique_list = list(train_unique_set)
+        train_unique_list.sort()
+
+        avg_is_canceled_list = []
+        avg_adr_list = []
+        num_list = []
+
+        for i in train_unique_list:
+            avg_is_canceled = np.average(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'is_canceled'].to_numpy())
+            avg_adr = np.average(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'adr'].to_numpy())
+            num = np.average(len(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'is_canceled'].to_numpy()))
+            avg_is_canceled_list.append(avg_is_canceled)
+            avg_adr_list.append(avg_adr)
+            num_list.append(num)
+
+        # plot is canceled
+        plt.figure()
+        plt.plot(train_unique_list, avg_is_canceled_list, 'r.')
+        plt.savefig("./train_unique_is_canceled_analysis/{}_is_canceled_mean.png".format(attribute))
+
+        # plot adr
+        plt.figure()
+        plt.plot(train_unique_list, avg_adr_list, 'r.')
+        plt.savefig("./train_unique_adr_analysis/{}_adr_mean.png".format(attribute))
+
+        # plot num
+        plt.figure()
+        plt.plot(train_unique_list, num_list, 'r.')
+        plt.savefig("./train_unique_adr_analysis/{}_num.png".format(attribute))
+
+    def plot_test(self, attribute):
+        test_attribute_list = list(set(self.dataset.get_test_column(attribute).to_numpy().squeeze()))
+        test_attribute_list.sort()
+
+        avg_is_canceled_list = []
+        avg_adr_list = []
+        num_list = []
+
+        for i in test_attribute_list:
+            avg_is_canceled = np.average(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'is_canceled'].to_numpy())
+            avg_adr = np.average(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'adr'].to_numpy())
+            num = np.average(len(self.train_df.loc[self.train_df[attribute] == i].loc[:, 'is_canceled'].to_numpy()))
+            avg_is_canceled_list.append(avg_is_canceled)
+            avg_adr_list.append(avg_adr)
+            num_list.append(num)
+
+        # plot is canceled
+        plt.figure()
+        plt.plot(test_attribute_list, avg_is_canceled_list, 'r.')
+        plt.savefig("./test_is_canceled_analysis/{}_is_canceled_mean.png".format(attribute))
+
+        # plot adr
+        plt.figure()
+        plt.plot(test_attribute_list, avg_adr_list, 'r.')
+        plt.savefig("./test_adr_analysis/{}_adr_mean.png".format(attribute))
+
+        # plot num
+        plt.figure()
+        plt.plot(test_attribute_list, num_list, 'r.')
+        plt.savefig("./test_adr_analysis/{}_num.png".format(attribute))
