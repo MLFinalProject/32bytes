@@ -66,7 +66,7 @@ for only_attribute in remove_only_list:
     x_train_is_canceled.drop([remove_string], axis=1, inplace=True)
     x_test_is_canceled.drop([remove_string], axis=1, inplace=True)
 
-# print(x_train_is_canceled)
+# print(x_train_is_canceled)sx
 # print(x_test_is_canceled)
 # print(y_train_is)
 
