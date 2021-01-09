@@ -17,13 +17,13 @@ net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['pr
 hotel_is_cancel.add_feature(room_feature)
 hotel_is_cancel.add_feature(net_canceled_feature)
 
-data_not_encoded = pd.concat([hotel_is_cancel.get_feature(encode_target),hotel_is_cancel.get_train_is_canceled()],axis = 1)
-data_encoded = count_encode(data_not_encoded[encode_target],data_not_encoded['is_canceled'])
-data_encoded_col_name = data_encoded.columns
-for col in data_encoded_col_name:
-	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
-hotel_is_cancel.add_feature(data_encoded)
-hotel_is_cancel.remove_feature(encode_target)
+# data_not_encoded = pd.concat([hotel_is_cancel.get_feature(encode_target),hotel_is_cancel.get_train_is_canceled()],axis = 1)
+# data_encoded = count_encode(data_not_encoded[encode_target],data_not_encoded['is_canceled'])
+# data_encoded_col_name = data_encoded.columns
+# for col in data_encoded_col_name:
+	# data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_is_cancel.add_feature(data_encoded)
+# hotel_is_cancel.remove_feature(encode_target)
 
 x_train_is_canceled = hotel_is_cancel.get_train_dataset()
 x_test_is_canceled = hotel_is_cancel.get_test_dataset()
@@ -42,7 +42,7 @@ arr = np.append(r.importances_mean.reshape(1,41),r.importances_std.reshape(1,41)
 feature_df = pd.DataFrame(arr,columns = x_val.columns)
 feature_df.index = ['mean','std']
 feature_df = feature_df.sort_values(by= 'mean',axis = 1, ascending = False)
-feature_df.to_csv('./feature_is_canceled.csv')
+feature_df.to_csv('./feature_is_canceled2.csv')
 
 hotel_adr = Dataset()
 room_feature = gen_room_feature(hotel_adr.get_feature(['reserved_room_type', 'assigned_room_type']))
@@ -50,13 +50,13 @@ net_canceled_feature = gen_net_canceled_feature(hotel_adr.get_feature(['previous
 hotel_adr.add_feature(room_feature)
 hotel_adr.add_feature(net_canceled_feature)
 
-data_not_encoded = pd.concat([hotel_adr.get_feature(encode_target),hotel_adr.get_train_adr()],axis = 1)
-data_encoded = count_encode(data_not_encoded[encode_target],data_not_encoded['adr'])
-data_encoded_col_name = data_encoded.columns
-for col in data_encoded_col_name:
-	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
-hotel_adr.add_feature(data_encoded)
-hotel_adr.remove_feature(encode_target)
+# data_not_encoded = pd.concat([hotel_adr.get_feature(encode_target),hotel_adr.get_train_adr()],axis = 1)
+# data_encoded = count_encode(data_not_encoded[encode_target],data_not_encoded['adr'])
+# data_encoded_col_name = data_encoded.columns
+# for col in data_encoded_col_name:
+	# data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_adr.add_feature(data_encoded)
+# hotel_adr.remove_feature(encode_target)
 
 x_train_adr = hotel_adr.get_train_dataset()
 x_test_adr = hotel_adr.get_test_dataset()
@@ -75,4 +75,4 @@ arr = np.append(r.importances_mean.reshape(1,41),r.importances_std.reshape(1,41)
 feature_df = pd.DataFrame(arr,columns = x_val.columns)
 feature_df.index = ['mean','std']
 feature_df = feature_df.sort_values(by= 'mean',axis = 1, ascending = False)
-feature_df.to_csv('./feature_adr.csv')
+feature_df.to_csv('./feature_adr2.csv')
