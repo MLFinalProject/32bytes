@@ -37,7 +37,7 @@ print(f'acc = {model.score(x_val,y_val)}')
 
 r = permutation_importance(model,x_val,y_val,n_repeats = 30,random_state = 0)
 
-arr = np.append(r.importances_mean.reshape(1,41),r.importances_std.reshape(1,41),axis = 0)
+arr = np.append(r.importances_mean.reshape(1,r.importances_mean.shape[0]),r.importances_std.reshape(1,r.importances_mean.shape[0]),axis = 0)
 #print(arr.shape)
 feature_df = pd.DataFrame(arr,columns = x_val.columns)
 feature_df.index = ['mean','std']
@@ -70,7 +70,7 @@ print(f'acc = {model.score(x_val,y_val)}')
 
 r = permutation_importance(model,x_val,y_val,n_repeats = 30,random_state = 0)
 
-arr = np.append(r.importances_mean.reshape(1,41),r.importances_std.reshape(1,41),axis = 0)
+arr = np.append(r.importances_mean.reshape(1,r.importances_mean.shape[0]),r.importances_std.reshape(1,r.importances_mean.shape[0]),axis = 0)
 #print(arr.shape)
 feature_df = pd.DataFrame(arr,columns = x_val.columns)
 feature_df.index = ['mean','std']
