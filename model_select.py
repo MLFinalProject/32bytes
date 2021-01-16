@@ -11,9 +11,13 @@ from sklearn.svm import SVR
 from predict import predict
 import random 
 
+encode_target = ['hotel','agent','arrival_date_day_of_month','assigned_room_type','customer_type','deposit_type','distribution_channel','market_segment','meal','reserved_room_type']
 target_encode_item = ['deposit_type','hotel','arrival_date_month','reserved_room_type','assigned_room_type','arrival_date_day_of_month','meal']
 count_encode_item = ['agent','country','market_segment','customer_type','distribution_channel']
 remove_item = ['arrival_date_year','babies','company','booking_changes']
+
+#target_encode_item = encode_target
+count_encode_item = encode_target
 
 hotel_is_cancel = Dataset()
 room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type', 'assigned_room_type']))
@@ -22,19 +26,19 @@ hotel_is_cancel.add_feature(room_feature)
 hotel_is_cancel.add_feature(net_canceled_feature)
 hotel_is_cancel.remove_feature(remove_item)
 
-data_not_encoded = pd.concat([hotel_is_cancel.get_feature(target_encode_item),hotel_is_cancel.get_train_is_canceled()],axis = 1)
-data_encoded = target_encode(data_not_encoded[target_encode_item],data_not_encoded['is_canceled'])
-for col in data_encoded.columns:
-	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
-hotel_is_cancel.add_feature(data_encoded)
-hotel_is_cancel.remove_feature(target_encode_item)
+# data_not_encoded = pd.concat([hotel_is_cancel.get_feature(target_encode_item),hotel_is_cancel.get_train_is_canceled()],axis = 1)
+# data_encoded = target_encode(data_not_encoded[target_encode_item],data_not_encoded['is_canceled'])
+# for col in data_encoded.columns:
+	# data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_is_cancel.add_feature(data_encoded)
+# hotel_is_cancel.remove_feature(target_encode_item)
 
-data_not_encoded = pd.concat([hotel_is_cancel.get_feature(count_encode_item),hotel_is_cancel.get_train_is_canceled()],axis = 1)
-data_encoded = count_encode(data_not_encoded[count_encode_item],data_not_encoded['is_canceled'])
-for col in data_encoded.columns:
-	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
-hotel_is_cancel.add_feature(data_encoded)
-hotel_is_cancel.remove_feature(count_encode_item)
+# data_not_encoded = pd.concat([hotel_is_cancel.get_feature(count_encode_item),hotel_is_cancel.get_train_is_canceled()],axis = 1)
+# data_encoded = count_encode(data_not_encoded[count_encode_item],data_not_encoded['is_canceled'])
+# for col in data_encoded.columns:
+	# data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_is_cancel.add_feature(data_encoded)
+# hotel_is_cancel.remove_feature(count_encode_item)
 
 x_train_is_canceled = hotel_is_cancel.get_train_dataset()
 x_test_is_canceled = hotel_is_cancel.get_test_dataset()
@@ -74,19 +78,19 @@ hotel_adr.add_feature(room_feature)
 hotel_adr.add_feature(net_canceled_feature)
 hotel_adr.remove_feature(remove_item)
 
-data_not_encoded = pd.concat([hotel_adr.get_feature(target_encode_item),hotel_adr.get_train_adr()],axis = 1)
-data_encoded = target_encode(data_not_encoded[target_encode_item],data_not_encoded['adr'])
-for col in data_encoded.columns:
-	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
-hotel_adr.add_feature(data_encoded)
-hotel_adr.remove_feature(target_encode_item)
+# data_not_encoded = pd.concat([hotel_adr.get_feature(target_encode_item),hotel_adr.get_train_adr()],axis = 1)
+# data_encoded = target_encode(data_not_encoded[target_encode_item],data_not_encoded['adr'])
+# for col in data_encoded.columns:
+	# data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_adr.add_feature(data_encoded)
+# hotel_adr.remove_feature(target_encode_item)
 
-data_not_encoded = pd.concat([hotel_adr.get_feature(count_encode_item),hotel_adr.get_train_adr()],axis = 1)
-data_encoded = count_encode(data_not_encoded[count_encode_item],data_not_encoded['adr'])
-for col in data_encoded.columns:
-	data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
-hotel_adr.add_feature(data_encoded)
-hotel_adr.remove_feature(count_encode_item)
+# data_not_encoded = pd.concat([hotel_adr.get_feature(count_encode_item),hotel_adr.get_train_adr()],axis = 1)
+# data_encoded = count_encode(data_not_encoded[count_encode_item],data_not_encoded['adr'])
+# for col in data_encoded.columns:
+	# data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_adr.add_feature(data_encoded)
+# hotel_adr.remove_feature(count_encode_item)
 
 x_train_adr = hotel_adr.get_train_dataset()
 x_test_adr = hotel_adr.get_test_dataset()
