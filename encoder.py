@@ -4,12 +4,8 @@ import category_encoders #pip install category_encoders
 
 def backward_difference_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'
-	result = pd.DataFrame()
-	for x in input_df_x.columns:
-		enc = category_encoders.BackwardDifferenceEncoder(cols = x)
-		enc = enc.fit_transform(input_df_x[x],input_df_y)
-		result[x] = enc.values.tolist()
-	return result
+	enc = category_encoders.BackwardDifferenceEncoder(cols = input_df_x.columns)
+	return enc.fit_transform(input_df_x,input_df_y)
 
 def count_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'
@@ -18,12 +14,8 @@ def count_encode(input_df_x,input_df_y):
 
 def helmert_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'
-	result = pd.DataFrame()
-	for x in input_df_x.columns:
-		enc = category_encoders.HelmertEncoder(cols = x)
-		enc = enc.fit_transform(input_df_x[x],input_df_y)
-		result[x] = enc.values.tolist()
-	return result
+	enc = category_encoders.HelmertEncoder(cols = input_df_x.columns)
+	return enc.fit_transform(input_df_x,input_df_y)
 
 def leave_one_out_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'
@@ -39,12 +31,8 @@ def m_estimate_encode(input_df_x,input_df_y,y_threshold):
 
 def one_hot_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'
-	result = pd.DataFrame()
-	for x in input_df_x.columns:
-		enc = category_encoders.OneHotEncoder(cols = x)
-		enc = enc.fit_transform(input_df_x[x],input_df_y)
-		result[x] = enc.values.tolist()
-	return result
+	enc = category_encoders.OneHotEncoder(cols = input_df_x.columns)
+	return enc.fit_transform(input_df_x,input_df_y)
 	
 def polynomial_encode(input_df_x,input_df_y):
 	input_df_x.columns = input_df_x.columns + '_encoded'
