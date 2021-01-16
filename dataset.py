@@ -104,5 +104,8 @@ class Dataset(object):
         temp_df = self.number_of_days_df[self.number_of_days_df['dataset'].eq(self.data_label["test"])].drop(['dataset'], axis = 1)
         return temp_df.reset_index(drop = True)
 
+    def get_test_column(self, column_name):
+        temp_df = self.train_test_df[self.train_test_df['dataset'].eq(self.data_label["test"])]
+        return temp_df[[column_name]]
 
 
