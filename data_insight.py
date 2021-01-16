@@ -12,6 +12,7 @@ class DataInsight():
         self.train_df = self.dataset.train_test_df[self.dataset.train_test_df['dataset'].eq(self.dataset.data_label["train"])].drop(['dataset'], axis=1)
         self.train_df['adr'] = self.dataset.target_df['adr']
         self.train_df['is_canceled'] = self.dataset.target_df['is_canceled']
+        print(type(self.train_df))
 
     def plot_attribute_adr(self, attribute):
         attribute_element = self.dataset.get_train_column(attribute).to_numpy().squeeze()
@@ -51,11 +52,12 @@ class DataInsight():
         # print(len(avg_list))
         # print(len(std_list))
         plt.figure()
-        plt.errorbar(attribute_element, avg_list, std_list, linestyle='None', marker='^')
-        plt.xlabel(attribute)
-        plt.ylabel('adr_w_std')
-        # plt.savefig("./data_adr_analysis/img/{}_adr_mean.png".format(attribute))
-        plt.savefig("./data_adr_analysis/img_w_std/{}_adr_mean_std.png".format(attribute))
+        plt.errorbar(attribute_element, avg_list, std_list, linestyle='None', marker='o', markersize = '8')
+        plt.xlabel(attribute, fontsize = 14)
+        plt.ylabel('adr', fontsize = 14)
+        # plt.ylabel('adr_w_std')
+        plt.savefig("./data_adr_analysis/img/{}_adr_mean.png".format(attribute))
+        # plt.savefig("./data_adr_analysis/img_w_std/{}_adr_mean_std.png".format(attribute))
         # plt.show()
 
         # plt.figure()
@@ -66,8 +68,8 @@ class DataInsight():
         # plt.show()
         # # plt.show()
 
-        data_num_df = pd.DataFrame({attribute: num_list})
-        data_num_df.to_csv(r'./data_num_analysis/csv/{}_num.csv'.format(attribute), index=True)
+        # data_num_df = pd.DataFrame({attribute: num_list})
+        # data_num_df.to_csv(r'./data_num_analysis/csv/{}_num.csv'.format(attribute), index=True)
 
     def plot_attribute_is_canceled_mean(self, attribute):
         attribute_element = self.dataset.get_train_column(attribute).to_numpy().squeeze()
