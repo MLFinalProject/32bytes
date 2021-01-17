@@ -5,6 +5,10 @@ from classification import *
 from regression import *
 from feature_engineering import *
 from predict import predict
+from encoder import *
+
+
+encode_target = ['agent']
 
 hotel_is_cancel = Dataset()
 
@@ -24,6 +28,14 @@ for only_attribute in remove_only_list:
     # print(new_attribute_column[only_attribute].value_counts().loc['RMV'])
     hotel_is_cancel.remove_feature([only_attribute])
     hotel_is_cancel.add_feature(new_attribute_column)
+
+# data_not_encoded = pd.concat([hotel_is_cancel.get_feature(encode_target),hotel_is_cancel.get_train_is_canceled()],axis = 1)
+# data_encoded = target_encode(data_not_encoded[encode_target],data_not_encoded['is_canceled'])
+# data_encoded_col_name = data_encoded.columns
+# for col in data_encoded_col_name:
+#   data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_is_cancel.add_feature(data_encoded)
+
 # exit()
 # -------------------------
 hotel_is_cancel.remove_feature(['company'])
@@ -37,7 +49,7 @@ x_train_is_canceled = hotel_is_cancel.get_train_dataset()
 x_test_is_canceled = hotel_is_cancel.get_test_dataset()
 y_train_is_canceled = hotel_is_cancel.get_train_is_canceled()
 
-
+# remove_only_list = ['country']
 for only_attribute in remove_only_list:
     remove_string = '{}_RMV'.format(only_attribute)
     x_train_is_canceled.drop([remove_string], axis=1, inplace=True)
@@ -45,31 +57,6 @@ for only_attribute in remove_only_list:
 
 
 # ------
-
-# deposit_type_column = x_test_is_canceled[['deposit_type_Non Refund']]
-# print(deposit_type_column)
-# exit()
-
-
-clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled)
-# clf.v_fold_validate()
-
-clf.train()
-is_canceled_df = clf.predict()
-# print(hotel_is_cancel.get_feature(['deposit_type']))
-# is_canceled_df
-# print(is_canceled_df)
-# deposit_type_column = hotel_is_cancel.train_test_df.eq(hotel_is_cancel.data_label["test"])[['deposit_type']]
-deposit_type_column = x_test_is_canceled[['deposit_type_Non Refund']]
-# print(deposit_type_column)
-# print(is_canceled_df)
-print(is_canceled_df['is_canceled'].value_counts().loc[1])
-is_canceled_df['is_canceled'].values[deposit_type_column['deposit_type_Non Refund'] == 1] = 1
-print(is_canceled_df['is_canceled'].value_counts().loc[1])
-# data_frame['country'].values[data_frame['country'].isin(only_country)] = 'RMV'
-print(is_canceled_df)
-# exit()
-
 
 hotel_adr = Dataset()
 
@@ -86,6 +73,15 @@ for only_attribute in remove_only_list:
     hotel_adr.add_feature(new_attribute_column)
 # exit()
 # -------------------------
+
+# data_not_encoded = pd.concat([hotel_adr.get_feature(encode_target),hotel_adr.get_train_adr()],axis = 1)
+# data_encoded = target_encode(data_not_encoded[encode_target],data_not_encoded['adr'])
+# data_encoded_col_name = data_encoded.columns
+# for col in data_encoded_col_name:
+#   data_encoded[col].fillna(data_encoded[col].mean(),inplace = True)
+# hotel_adr.add_feature(data_encoded)
+
+
 hotel_adr.remove_feature(['company'])
 hotel_adr.remove_feature(['arrival_date_year'])
 
@@ -93,15 +89,32 @@ x_train_adr = hotel_adr.get_train_dataset()
 x_test_adr = hotel_adr.get_test_dataset()
 y_train_adr = hotel_adr.get_train_adr()
 
+# remove_only_list = ['country']
 for only_attribute in remove_only_list:
     remove_string = '{}_RMV'.format(only_attribute)
     x_train_adr.drop([remove_string], axis=1, inplace=True)
     x_test_adr.drop([remove_string], axis=1, inplace=True)
 
 
-reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr)
-# reg.v_fold_validate()
 
+# model selection:
+
+# clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled, seed = 112) #seed = 112, 1126, 6174
+# clf = TheGradientBoost(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled, seed = 112) #seed = 112, 1126, 6174
+# clf = TheDecisionTree(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled, seed = 112) #seed = 112, 1126, 6174
+clf = TheLogisticRegression(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled, seed = 112) #seed = 112, 1126, 6174
+
+clf.monthly_validate()
+clf.train()
+is_canceled_df = clf.predict()
+
+
+# reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr, seed = 112) #seed = 112, 1126, 6174
+# reg = TheGradientBoostingRegressor(x_train_adr, y_train_adr, x_test_adr, seed = 112) #seed = 112, 1126, 6174
+# reg = TheDecisionTreeRegressor(x_train_adr, y_train_adr, x_test_adr, seed = 112) #seed = 112, 1126, 6174
+reg = TheLinearRegression(x_train_adr, y_train_adr, x_test_adr) #no seed required
+
+reg.monthly_validate()
 reg.train()
 adr_df = reg.predict()
 
