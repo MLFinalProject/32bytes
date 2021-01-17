@@ -51,7 +51,7 @@ class Regression:
 class TheRandomForestRegressor(Regression):
     def __init__(self, x_train, y_train, x_test):
         super().__init__(x_train, y_train, x_test)
-        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=0.4, min_samples_leaf = 2, n_estimators=128, random_state = 6174, bootstrap=True, n_jobs = -1)
+        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = 6174, n_jobs = -1)
 
     def v_fold_validate(self):
         super().v_fold_validate()
@@ -87,7 +87,7 @@ class TheRandomForestRegressor(Regression):
 
     def ensemble_seed(self, seed):
         self.start_time = time.time()
-        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=0.4, min_samples_leaf = 2, n_estimators=128, random_state = seed, n_jobs = -1)
+        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = seed, n_jobs = -1)
         self.reg = self.reg.fit(self.x_train,self.y_train)
         train_err = self.reg.score(self.x_train,self.y_train)
         predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
@@ -123,7 +123,7 @@ class TheRandomForestRegressor(Regression):
 
 
 		
-# class TheLinearRegression(Regression):
+# class TheLinearRegression(Regressi on):
 #     def __init__(self, x_train, y_train, x_test):
 #         super().__init__(x_train, y_train, x_test)
 #         self.reg = LinearRegression()
@@ -244,16 +244,34 @@ if __name__ == '__main__':
     # hotel_adr.add_feature(new_attribute_df)
     # hotel_adr.train_test_df['arrival_date_week_number'] = hotel_adr.train_test_df['arrival_date_week_number'].apply(str)
     # hotel_adr.remove_feature(['agent','company'])
-    room_feature = gen_room_feature(hotel_adr.get_feature(['reserved_room_type', 'assigned_room_type']))
-    net_canceled_feature = gen_net_canceled_feature(hotel_adr.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
-    hotel_adr.add_feature(room_feature)
-    hotel_adr.add_feature(net_canceled_feature)
+
+    # room_feature = gen_room_feature(hotel_adr.get_feature(['reserved_room_type', 'assigned_room_type']))
+    # net_canceled_feature = gen_net_canceled_feature(hotel_adr.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
+    # hotel_adr.add_feature(room_feature)
+    # hotel_adr.add_feature(net_canceled_feature)
+
+    # remove_only_list = ['country', 'agent', 'company']
+    # for only_attribute in remove_only_list:
+    #     attribute_train_column = hotel_adr.get_train_column(only_attribute)
+    #     attribute_test_column = hotel_adr.get_test_column(only_attribute)
+    #     new_attribute_column = remove_only(hotel_adr.get_feature([only_attribute]), attribute_train_column, attribute_test_column)
+    #     hotel_adr.remove_feature([only_attribute])
+    #     hotel_adr.add_feature(new_attribute_column)
+
     x_train_adr = hotel_adr.get_train_dataset()
     x_test_adr = hotel_adr.get_test_dataset()
     y_train_adr = hotel_adr.get_train_adr()
+
+    # for only_attribute in remove_only_list:
+    #     remove_string = '{}_RMV'.format(only_attribute)
+    #     x_train_adr.drop([remove_string], axis=1, inplace=True)
+    #     x_test_adr.drop([remove_string], axis=1, inplace=True)
+
     reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr)
-    reg.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = 123, bootstrap=True, n_jobs = -1)
+    reg.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = 6174, bootstrap=True, n_jobs = -1)
+    reg.monthly_validate(123)
     reg.monthly_validate(1126)
+    reg.monthly_validate(390625)
 
     # reg.three_seed_validate()
     # exit()
