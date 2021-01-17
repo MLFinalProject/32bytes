@@ -141,6 +141,9 @@ class TheDecisionTree(Classification):
         self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
         train_acc = self.clf.score(self.x_val_train, self.y_val_train)
         test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+
+        
+
         print(f'Overall||\ntrain_acc: {train_acc:.3f}\ntest_acc: {test_acc:.3f}')
         print('--------------------\nMonthly||')
         month_acc = []

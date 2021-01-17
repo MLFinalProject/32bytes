@@ -12,22 +12,23 @@ encode_target = ['agent']
 
 hotel_is_cancel = Dataset()
 
-room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type', 'assigned_room_type']))
-net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
-hotel_is_cancel.add_feature(room_feature)
-hotel_is_cancel.add_feature(net_canceled_feature)
+# room_feature = gen_room_feature(hotel_is_cancel.get_feature(['reserved_room_type', 'assigned_room_type']))
+# net_canceled_feature = gen_net_canceled_feature(hotel_is_cancel.get_feature(['previous_cancellations', 'previous_bookings_not_canceled']))
+# hotel_is_cancel.add_feature(room_feature)
+# hotel_is_cancel.add_feature(net_canceled_feature)
 
 # ---remove only_feature---
 # country_column = hotel_is_cancel.get_feature(['country'])
-remove_only_list = ['country', 'agent']
-for only_attribute in remove_only_list:
-    attribute_train_column = hotel_is_cancel.get_train_column(only_attribute)
-    attribute_test_column = hotel_is_cancel.get_test_column(only_attribute)
-    new_attribute_column = remove_only(hotel_is_cancel.get_feature([only_attribute]), attribute_train_column, attribute_test_column)
-    # print(new_country_column)
-    # print(new_attribute_column[only_attribute].value_counts().loc['RMV'])
-    hotel_is_cancel.remove_feature([only_attribute])
-    hotel_is_cancel.add_feature(new_attribute_column)
+
+
+# Remove only
+# remove_only_list = ['country', 'agent']
+# for only_attribute in remove_only_list:
+#     attribute_train_column = hotel_is_cancel.get_train_column(only_attribute)
+#     attribute_test_column = hotel_is_cancel.get_test_column(only_attribute)
+#     new_attribute_column = remove_only(hotel_is_cancel.get_feature([only_attribute]), attribute_train_column, attribute_test_column)
+#     hotel_is_cancel.remove_feature([only_attribute])
+#     hotel_is_cancel.add_feature(new_attribute_column)
 
 # data_not_encoded = pd.concat([hotel_is_cancel.get_feature(encode_target),hotel_is_cancel.get_train_is_canceled()],axis = 1)
 # data_encoded = target_encode(data_not_encoded[encode_target],data_not_encoded['is_canceled'])
@@ -38,11 +39,8 @@ for only_attribute in remove_only_list:
 
 # exit()
 # -------------------------
+# remove feature
 hotel_is_cancel.remove_feature(['company'])
-
-
-# ---Remove only---
-
 hotel_is_cancel.remove_feature(['arrival_date_year'])
 
 x_train_is_canceled = hotel_is_cancel.get_train_dataset()
@@ -109,10 +107,10 @@ clf.train()
 is_canceled_df = clf.predict()
 
 
-# reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr, seed = 112) #seed = 112, 1126, 6174
+reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr, seed = 112) #seed = 112, 1126, 6174
 # reg = TheGradientBoostingRegressor(x_train_adr, y_train_adr, x_test_adr, seed = 112) #seed = 112, 1126, 6174
 # reg = TheDecisionTreeRegressor(x_train_adr, y_train_adr, x_test_adr, seed = 112) #seed = 112, 1126, 6174
-reg = TheLinearRegression(x_train_adr, y_train_adr, x_test_adr) #no seed required
+# reg = TheLinearRegression(x_train_adr, y_train_adr, x_test_adr) #no seed required
 
 reg.monthly_validate()
 reg.train()
