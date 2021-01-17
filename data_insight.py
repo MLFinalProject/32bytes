@@ -82,7 +82,9 @@ class DataInsight():
             num_list.append(num)
             # print("average of {} = {}, which has {} samples".format(i, avg, num))
         plt.figure()
-        plt.plot(attribute_element, avg_list, 'r.')
+        plt.plot(attribute_element, avg_list, '.')
+        plt.xlabel(attribute, fontsize=16)
+        plt.ylabel('is_canceled_mean', fontsize=16)
         plt.savefig("./data_is_canceled_analysis/img/{}_is_canceled_mean.png".format(attribute))
 
     def compare_train_test(self, attribute):

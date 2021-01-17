@@ -73,7 +73,7 @@ for only_attribute in remove_only_list:
 # ------
 
 clf = TheRandomForest(x_train_is_canceled, y_train_is_canceled, x_test_is_canceled)
-clf.v_fold_validate()
+# clf.v_fold_validate()
 
 clf.train()
 is_canceled_df = clf.predict()
@@ -115,7 +115,7 @@ for only_attribute in remove_only_list:
 
 
 reg = TheRandomForestRegressor(x_train_adr, y_train_adr, x_test_adr)
-reg.v_fold_validate()
+# reg.v_fold_validate()
 
 reg.train()
 adr_df = reg.predict()
