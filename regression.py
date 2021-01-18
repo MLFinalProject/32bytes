@@ -8,6 +8,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import ExtraTreesRegressor
 import time
+import csv
 
 class Regression:
     def __init__(self, x_train, y_train, x_test):
@@ -64,11 +65,18 @@ class TheRandomForestRegressor(Regression):
 
     def monthly_validate(self, seed = None):
         super().monthly_validate(seed)
+
+        result_list = []
+
         self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
         y_train_pred = self.reg.predict(self.x_val_train)
         y_test_pred = self.reg.predict(self.x_val_test)
         train_err = mean_absolute_error(y_train_pred, self.y_val_train)
         test_err = mean_absolute_error(y_test_pred, self.y_val_test)
+
+        result_list.append(train_err)
+        result_list.append(test_err)
+
         print(f'Overall||\ntrain_err: {train_err:.3f}\ntest_err: {test_err:.3f}')
         print('--------------------\nMonthly||')
         month_acc = []
@@ -76,10 +84,17 @@ class TheRandomForestRegressor(Regression):
             y_test_pred = self.reg.predict(self.x_month_test[m])
             test_err = mean_absolute_error(y_test_pred, self.y_month_test[m])
             month_acc.append(test_err)
+            result_list.append(test_err)
             print(f'test_err: {test_err:.3f} ({m})')
         print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
         print(f'mean: {np.mean(month_acc[3:8]):.3f}, std: {np.std(month_acc[3:8]):.3f}, max: {np.max(month_acc[3:8]):.3f}, min: {np.min(month_acc[3:8]):.3f} (April-August)')
         print(f'done in {time.time()-self.start_time:.3f}(s).\n')
+
+        return result_list
+
+        # with open('validation.csv', 'a', newline = '') as file:
+        #     writer = csv.writer(file, delimiter=',')
+        #     writer.writerow(result_list)
 
     def ensemble(self):
         self.x_val_train, self.x_val_test, self.y_val_train, self.y_val_test = train_test_split(

@@ -77,18 +77,31 @@ class TheRandomForest(Classification):
 
     def monthly_validate(self, seed = None):
         super().monthly_validate(seed)
+        result_list = []
         self.clf = self.clf.fit(self.x_val_train, self.y_val_train)
         train_acc = self.clf.score(self.x_val_train, self.y_val_train)
         test_acc = self.clf.score(self.x_val_test, self.y_val_test)
+
+        result_list.append(train_acc)
+        result_list.append(test_acc)
+
         print(f'Overall||\ntrain_acc: {train_acc:.3f}\ntest_acc: {test_acc:.3f}')
         print('--------------------\nMonthly||')
         month_acc = []
         for m in self.month_str:
             test_acc = self.clf.score(self.x_month_test[m], self.y_month_test[m])
             month_acc.append(test_acc)
+            result_list.append(test_acc)
             print(f'test_acc: {test_acc:.3f} ({m})')
+
+        # with open('validation.csv', 'a', newline = '') as file:
+        #     writer = csv.writer(file, delimiter=',')
+        #     writer.writerow(result_list)
+
         print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
         print(f'done in {time.time()-self.start_time:.3f}(s).\n')
+
+        return result_list
 
 
     def predict(self):
