@@ -49,9 +49,9 @@ class Regression:
         self.start_time = time.time()
 
 class TheRandomForestRegressor(Regression):
-    def __init__(self, x_train, y_train, x_test):
+    def __init__(self, x_train, y_train, x_test, seed = 112):
         super().__init__(x_train, y_train, x_test)
-        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = 6174, n_jobs = -1)
+        self.reg = RandomForestRegressor(min_impurity_decrease=0.001, max_features=.55, min_samples_leaf = 2, n_estimators=128, random_state = seed, n_jobs = -1)
 
     def v_fold_validate(self):
         super().v_fold_validate()
@@ -123,108 +123,146 @@ class TheRandomForestRegressor(Regression):
 
 
 		
-# class TheLinearRegression(Regressi on):
-#     def __init__(self, x_train, y_train, x_test):
-#         super().__init__(x_train, y_train, x_test)
-#         self.reg = LinearRegression()
+class TheLinearRegression(Regression):
+    def __init__(self, x_train, y_train, x_test):
+        super().__init__(x_train, y_train, x_test)
+        self.reg = LinearRegression(n_jobs = -1)
 
-#     def v_fold_validate(self):
-#         super().v_fold_validate()
-#         self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-#         train_err = self.reg.score(self.x_val_train, self.y_val_train)
-#         test_err = self.reg.score(self.x_val_test, self.y_val_test)
-#         print('---Cross-Validation Testing---')
-#         print(f'Training Accuracy of our model is: {train_err}')
-#         print(f'Cross-Validation Test Accuracy of our model is: {test_err}')
-#         print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+    def v_fold_validate(self):
+        super().v_fold_validate()
+        self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+        train_err = self.reg.score(self.x_val_train, self.y_val_train)
+        test_err = self.reg.score(self.x_val_test, self.y_val_test)
+        print('---Cross-Validation Testing---')
+        print(f'Training Accuracy of our model is: {train_err}')
+        print(f'Cross-Validation Test Accuracy of our model is: {test_err}')
+        print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
 	
-#     def train(self):
-#         super().train()
-#         self.reg = self.reg.fit(self.x_train,self.y_train)
-#         train_err = self.reg.score(self.x_train,self.y_train)
-#         print(f'Training Accuracy of our model is: {train_err:.3f}')
-#         print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+    def train(self):
+        super().train()
+        self.reg = self.reg.fit(self.x_train,self.y_train)
+        train_err = self.reg.score(self.x_train,self.y_train)
+        print(f'Training Accuracy of our model is: {train_err:.3f}')
+        print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
 
-#     def monthly_validate(self, seed = None):
-#         super().monthly_validate(seed)
-#         self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-#         y_train_pred = self.reg.predict(self.x_val_train)
-#         y_test_pred = self.reg.predict(self.x_val_test)
-#         train_err = mean_absolute_error(y_train_pred, self.y_val_train)
-#         test_err = mean_absolute_error(y_test_pred, self.y_val_test)
-#         print(f'Overall||\ntrain_err: {train_err:.3f}\ntest_err: {test_err:.3f}')
-#         print('--------------------\nMonthly||')
-#         month_acc = []
-#         for m in self.month_str:
-#             y_test_pred = self.reg.predict(self.x_month_test[m])
-#             test_err = mean_absolute_error(y_test_pred, self.y_month_test[m])
-#             month_acc.append(test_err)
-#             print(f'test_err: {test_err:.3f} ({m})')
-    #     print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
-    #     print(f'mean: {np.mean(month_acc[3:8]):.3f}, std: {np.std(month_acc[3:8]):.3f}, max: {np.max(month_acc[3:8]):.3f}, min: {np.min(month_acc[3:8]):.3f} (April-August)')
-    #     print(f'done in {time.time()-self.start_time:.3f}(s).\n')
+    def monthly_validate(self, seed = None):
+        super().monthly_validate(seed)
+        self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+        y_train_pred = self.reg.predict(self.x_val_train)
+        y_test_pred = self.reg.predict(self.x_val_test)
+        train_err = mean_absolute_error(y_train_pred, self.y_val_train)
+        test_err = mean_absolute_error(y_test_pred, self.y_val_test)
+        print(f'Overall||\ntrain_err: {train_err:.3f}\ntest_err: {test_err:.3f}')
+        print('--------------------\nMonthly||')
+        month_acc = []
+        for m in self.month_str:
+            y_test_pred = self.reg.predict(self.x_month_test[m])
+            test_err = mean_absolute_error(y_test_pred, self.y_month_test[m])
+            month_acc.append(test_err)
+            print(f'test_err: {test_err:.3f} ({m})')
+        print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
+        print(f'mean: {np.mean(month_acc[3:8]):.3f}, std: {np.std(month_acc[3:8]):.3f}, max: {np.max(month_acc[3:8]):.3f}, min: {np.min(month_acc[3:8]):.3f} (April-August)')
+        print(f'done in {time.time()-self.start_time:.3f}(s).\n')
     
-    # def predict(self):
-    #     super().predict()
-    #     predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-    #     print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
-    #     return predicts
+    def predict(self):
+        super().predict()
+        predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+        print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+        return predicts
 
-# class TheDecisionTreeRegressor(Regression):
-# 	def __init__(self, x_train, y_train, x_test):
-# 		super().__init__(x_train, y_train, x_test)
-# 		self.reg = DecisionTreeRegressor(random_state = 5)
+class TheDecisionTreeRegressor(Regression):
+	def __init__(self, x_train, y_train, x_test, seed = 112):
+		super().__init__(x_train, y_train, x_test)
+		self.reg = DecisionTreeRegressor(random_state = seed)
 	
-# 	def v_fold_validate(self):
-# 		super().v_fold_validate()
-# 		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-# 		train_err = self.reg.score(self.x_val_train, self.y_val_train)
-# 		test_err = self.reg.score(self.x_val_test, self.y_val_test)
-# 		print('---Cross-Validation Testing---')
-# 		print(f'Training Accuracy of our model is: {train_err:.3f}')
-# 		print(f'Cross-Validation Test Accuracy of our model is: {test_err:.3f}')
-# 		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
-	
-# 	def train(self):
-# 		super().train()
-# 		self.reg = self.reg.fit(self.x_train,self.y_train)
-# 		train_err = self.reg.score(self.x_train,self.y_train)
-# 		print(f'Training Accuracy of our model is: {train_err:.3f}')
-# 		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
-		
-# 	def predict(self):
-# 		super().predict()
-# 		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-# 		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
-# 		return predicts
+	def v_fold_validate(self):
+		super().v_fold_validate()
+		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+		train_err = self.reg.score(self.x_val_train, self.y_val_train)
+		test_err = self.reg.score(self.x_val_test, self.y_val_test)
+		print('---Cross-Validation Testing---')
+		print(f'Training Accuracy of our model is: {train_err:.3f}')
+		print(f'Cross-Validation Test Accuracy of our model is: {test_err:.3f}')
+		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
 
-# class TheGradientBoostingRegressor(Regression):
-# 	def __init__(self, x_train, y_train, x_test):
-# 		super().__init__(x_train, y_train, x_test)
-# 		self.reg = GradientBoostingRegressor(random_state = 0, n_estimators = 100, loss='lad', max_depth = 4)
+	def monthly_validate(self, seed = None):
+		super().monthly_validate(seed)
+		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+		y_train_pred = self.reg.predict(self.x_val_train)
+		y_test_pred = self.reg.predict(self.x_val_test)
+		train_err = mean_absolute_error(y_train_pred, self.y_val_train)
+		test_err = mean_absolute_error(y_test_pred, self.y_val_test)
+		print(f'Overall||\ntrain_err: {train_err:.3f}\ntest_err: {test_err:.3f}')
+		print('--------------------\nMonthly||')
+		month_acc = []
+		for m in self.month_str:
+			y_test_pred = self.reg.predict(self.x_month_test[m])
+			test_err = mean_absolute_error(y_test_pred, self.y_month_test[m])
+			month_acc.append(test_err)
+			print(f'test_err: {test_err:.3f} ({m})')
+		print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
+		print(f'mean: {np.mean(month_acc[3:8]):.3f}, std: {np.std(month_acc[3:8]):.3f}, max: {np.max(month_acc[3:8]):.3f}, min: {np.min(month_acc[3:8]):.3f} (April-August)')
+		print(f'done in {time.time()-self.start_time:.3f}(s).\n')
 	
-# 	def v_fold_validate(self):
-# 		super().v_fold_validate()
-# 		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
-# 		train_err = self.reg.score(self.x_val_train, self.y_val_train)
-# 		test_err = self.reg.score(self.x_val_test, self.y_val_test)
-# 		print('---Cross-Validation Testing---')
-# 		print(f'Training Accuracy of our model is: {train_err:.3f}')
-# 		print(f'Cross-Validation Test Accuracy of our model is: {test_err:.3f}')
-# 		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
-	
-# 	def train(self):
-# 		super().train()
-# 		self.reg = self.reg.fit(self.x_train,self.y_train)
-# 		train_err = self.reg.score(self.x_train,self.y_train)
-# 		print(f'Training Accuracy of our model is: {train_err:.3f}')
-# 		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+	def train(self):
+		super().train()
+		self.reg = self.reg.fit(self.x_train,self.y_train)
+		train_err = self.reg.score(self.x_train,self.y_train)
+		print(f'Training Accuracy of our model is: {train_err:.3f}')
+		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
 		
-# 	def predict(self):
-# 		super().predict()
-# 		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
-# 		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
-# 		return predicts
+	def predict(self):
+		super().predict()
+		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+		return predicts
+
+class TheGradientBoostingRegressor(Regression):
+	def __init__(self, x_train, y_train, x_test,seed = 112):
+		super().__init__(x_train, y_train, x_test)
+		self.reg = GradientBoostingRegressor(random_state = seed, n_estimators = 100, loss='lad', max_depth = 4)
+	
+	def v_fold_validate(self):
+		super().v_fold_validate()
+		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+		train_err = self.reg.score(self.x_val_train, self.y_val_train)
+		test_err = self.reg.score(self.x_val_test, self.y_val_test)
+		print('---Cross-Validation Testing---')
+		print(f'Training Accuracy of our model is: {train_err:.3f}')
+		print(f'Cross-Validation Test Accuracy of our model is: {test_err:.3f}')
+		print(f'adr validation done in {time.time()-self.start_time:.3f}(s).')
+
+	def monthly_validate(self, seed = None):
+		super().monthly_validate(seed)
+		self.reg = self.reg.fit(self.x_val_train, self.y_val_train)
+		y_train_pred = self.reg.predict(self.x_val_train)
+		y_test_pred = self.reg.predict(self.x_val_test)
+		train_err = mean_absolute_error(y_train_pred, self.y_val_train)
+		test_err = mean_absolute_error(y_test_pred, self.y_val_test)
+		print(f'Overall||\ntrain_err: {train_err:.3f}\ntest_err: {test_err:.3f}')
+		print('--------------------\nMonthly||')
+		month_acc = []
+		for m in self.month_str:
+			y_test_pred = self.reg.predict(self.x_month_test[m])
+			test_err = mean_absolute_error(y_test_pred, self.y_month_test[m])
+			month_acc.append(test_err)
+			print(f'test_err: {test_err:.3f} ({m})')
+		print(f'mean: {np.mean(month_acc):.3f}, std: {np.std(month_acc):.3f}, max: {np.max(month_acc):.3f}, min: {np.min(month_acc):.3f}')
+		print(f'mean: {np.mean(month_acc[3:8]):.3f}, std: {np.std(month_acc[3:8]):.3f}, max: {np.max(month_acc[3:8]):.3f}, min: {np.min(month_acc[3:8]):.3f} (April-August)')
+		print(f'done in {time.time()-self.start_time:.3f}(s).\n')
+	
+	def train(self):
+		super().train()
+		self.reg = self.reg.fit(self.x_train,self.y_train)
+		train_err = self.reg.score(self.x_train,self.y_train)
+		print(f'Training Accuracy of our model is: {train_err:.3f}')
+		print(f'adr training done in {time.time()-self.start_time:.3f}(s).')
+		
+	def predict(self):
+		super().predict()
+		predicts = pd.DataFrame(self.reg.predict(self.x_test), columns = ['adr'])
+		print(f'adr prediction done in {time.time()-self.start_time:.3f}(s).')
+		return predicts
 
 
 
